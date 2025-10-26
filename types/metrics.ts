@@ -78,7 +78,7 @@ export type LatestItem = z.infer<typeof LatestItemSchema>;
  */
 export const LatestSummarySchema = z.object({
   items: z.array(LatestItemSchema),
-  missing: z.array(z.string()),
+  missing: z.array(z.union([z.string(), z.object({}).passthrough()])),
   summary: z.unknown().optional(),
 });
 
