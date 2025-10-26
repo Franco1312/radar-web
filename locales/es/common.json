@@ -1,0 +1,19 @@
+{
+  "updated_at": "Actualizado al",
+  "retry": "Reintentar",
+  "see_details": "Ver detalle",
+  "what_to_watch": "Qué mirar ahora",
+  "dashboard": "Dashboard",
+  "metrics": "Métricas",
+  "health": "Estado del Sistema",
+  "loading": "Cargando...",
+  "error": "Error",
+  "no_data": "Sin datos disponibles",
+  "last_update": "Última actualización",
+  "trend_up": "Tendencia alcista",
+  "trend_down": "Tendencia bajista", 
+  "trend_flat": "Tendencia estable",
+  "system_healthy": "Sistema Operativo",
+  "system_degraded": "Sistema Degradado",
+  "system_down": "Sistema Inactivo"
+}

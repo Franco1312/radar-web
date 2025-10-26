@@ -1,0 +1,65 @@
+/**
+ * Theme variables for semantic colors
+ */
+
+:root {
+  /* Semantic colors */
+  --positive: #16a34a;  /* green-600 */
+  --negative: #dc2626;  /* red-600 */
+  --neutral: #6b7280;   /* gray-500 */
+  --warning: #f59e0b;   /* amber-500 */
+  
+  /* Extended palette */
+  --positive-light: #dcfce7;  /* green-100 */
+  --positive-dark: #15803d;   /* green-700 */
+  --negative-light: #fef2f2;  /* red-100 */
+  --negative-dark: #b91c1c;   /* red-700 */
+  --warning-light: #fef3c7;   /* amber-100 */
+  --warning-dark: #d97706;    /* amber-600 */
+  --neutral-light: #f3f4f6;   /* gray-100 */
+  --neutral-dark: #374151;    /* gray-700 */
+  
+  /* Chart colors */
+  --chart-primary: #3b82f6;   /* blue-500 */
+  --chart-secondary: #10b981; /* emerald-500 */
+  --chart-tertiary: #f59e0b;  /* amber-500 */
+  --chart-quaternary: #ef4444; /* red-500 */
+  
+  /* Background gradients */
+  --gradient-positive: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  --gradient-negative: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+  --gradient-warning: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  --gradient-neutral: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+}
+
+/* Dark mode support (for future implementation) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --positive: #22c55e;  /* green-500 */
+    --negative: #ef4444;  /* red-500 */
+    --neutral: #9ca3af;   /* gray-400 */
+    --warning: #fbbf24;   /* amber-400 */
+  }
+}
+
+/* Utility classes for semantic colors */
+.text-positive { color: var(--positive); }
+.text-negative { color: var(--negative); }
+.text-neutral { color: var(--neutral); }
+.text-warning { color: var(--warning); }
+
+.bg-positive { background-color: var(--positive); }
+.bg-negative { background-color: var(--negative); }
+.bg-neutral { background-color: var(--neutral); }
+.bg-warning { background-color: var(--warning); }
+
+.border-positive { border-color: var(--positive); }
+.border-negative { border-color: var(--negative); }
+.border-neutral { border-color: var(--neutral); }
+.border-warning { border-color: var(--warning); }
+
+/* Gradient backgrounds */
+.bg-gradient-positive { background: var(--gradient-positive); }
+.bg-gradient-negative { background: var(--gradient-negative); }
+.bg-gradient-warning { background: var(--gradient-warning); }
+.bg-gradient-neutral { background: var(--gradient-neutral); }
