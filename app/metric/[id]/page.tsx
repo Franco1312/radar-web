@@ -1,18 +1,24 @@
 "use client";
 
-import { useMetricDefinition, useHistorical } from "@/features/metrics/hooks";
-import { TimeSeriesChart } from "@/components/charts/TimeSeriesChart";
-import { ErrorState } from "@/components/ui/ErrorState";
-import { ChartSkeleton } from "@/components/ui/LoadingSkeleton";
-import { interpret } from "@/features/metrics/interpretations";
-import { formatValue } from "@/lib/format";
-import { formatDate } from "@/lib/date";
-import { getDateRange } from "@/lib/date";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Info, Calendar, TrendingUp } from "lucide-react";
-import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useMetricDefinition, useHistorical } from "@/features/metrics/hooks";
+import { MetricCard } from "@/components/cards/MetricCard";
+import { Topbar } from "@/components/layout/Topbar";
+import { SiteFooter } from "@/components/layout/SiteFooter";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
+import { getDateRange } from "@/lib/date";
+import { getInterpretation } from "@/lib/analytics/interpretation";
+import { formatValue } from "@/lib/format/number";
 import { useMemo } from "react";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { ArrowLeft, Info, Calendar, TrendingUp, Download } from "lucide-react";
+
+// Dynamic import for chart
+const TimeSeriesChart = dynamic(() => import("@/components/charts/TimeSeriesChart"), {
+  loading: () => <div className="h-80 bg-surface-tertiary rounded-lg animate-pulse" />
+});
 
 export default function MetricDetailPage() {
   const params = useParams();
@@ -46,27 +52,43 @@ export default function MetricDetailPage() {
     return chartData[chartData.length - 1];
   }, [chartData]);
 
-  // Generate interpretation
+  // Get interpretation
   const interpretation = useMemo(() => {
     if (!latestValue || !definition) return null;
-    
-    return interpret(definition.id, {
-      value: latestValue.value,
-      metadata: historicalData?.points?.find(p => p.ts === latestValue.ts)?.metadata,
-      def: definition,
-    });
-  }, [latestValue, definition, historicalData]);
+    return getInterpretation(metricId, latestValue.value, {});
+  }, [latestValue, definition, metricId]);
+
+  // Map category from metric ID
+  const getCategory = (id: string): 'deltas' | 'ratios' | 'fx' | 'monetary' | 'data_health' => {
+    if (id.startsWith('delta.')) return 'deltas';
+    if (id.startsWith('ratio.')) return 'ratios';
+    if (id.startsWith('fx.')) return 'fx';
+    if (id.startsWith('data.')) return 'data_health';
+    return 'monetary';
+  };
+
+  // Map unit from definition
+  const getUnit = (unit?: string): 'percent' | 'ARS' | 'USD' | 'ratio' | 'other' => {
+    if (!unit) return 'other';
+    if (unit.includes('%') || unit.includes('percent')) return 'percent';
+    if (unit.includes('ARS')) return 'ARS';
+    if (unit.includes('USD')) return 'USD';
+    if (unit.includes('ratio')) return 'ratio';
+    return 'other';
+  };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-6">
-            <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-2" />
-            <div className="h-4 w-32 bg-gray-200 rounded animate-pulse" />
+      <div className="min-h-screen bg-surface-secondary">
+        <Topbar />
+        <main className="max-w-6xl mx-auto p-6">
+          <div className="space-y-6">
+            <LoadingSkeleton className="h-8 w-64" />
+            <LoadingSkeleton className="h-80 w-full" />
+            <LoadingSkeleton className="h-40 w-full" />
           </div>
-          <ChartSkeleton height={400} />
-        </div>
+        </main>
+        <SiteFooter />
       </div>
     );
   }
@@ -76,8 +98,9 @@ export default function MetricDetailPage() {
     const isMetricNotFound = histError?.message?.includes('500') || defError?.message?.includes('500');
     
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-6xl mx-auto">
+      <div className="min-h-screen bg-surface-secondary">
+        <Topbar />
+        <main className="max-w-6xl mx-auto p-6">
           <ErrorState
             title={isMetricNotFound ? "Métrica sin datos" : "Error al cargar la métrica"}
             message={isMetricNotFound 
@@ -86,174 +109,203 @@ export default function MetricDetailPage() {
             }
             onRetry={() => window.location.reload()}
           />
-        </div>
+        </main>
+        <SiteFooter />
       </div>
     );
   }
 
   if (!definition) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-6xl mx-auto">
+      <div className="min-h-screen bg-surface-secondary">
+        <Topbar />
+        <main className="max-w-6xl mx-auto p-6">
           <ErrorState
             title="Métrica no encontrada"
-            message="La métrica solicitada no existe o no está disponible."
+            message="La métrica solicitada no existe en el sistema."
+            onRetry={() => window.location.reload()}
           />
-        </div>
+        </main>
+        <SiteFooter />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center gap-4 mb-4">
-            <Link href="/">
-              <Button variant="outline" size="sm" className="gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Volver al Dashboard
-              </Button>
-            </Link>
+    <div className="min-h-screen bg-surface-secondary">
+      <Topbar />
+      
+      <main className="max-w-6xl mx-auto p-6 space-y-8">
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-6">
+          <Link 
+            href="/dashboard"
+            className="flex items-center gap-2 text-text-600 hover:text-text-900 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Volver al Dashboard
+          </Link>
+        </div>
+
+        {/* Metric Header */}
+        <div className="bg-white p-6 rounded-lg border border-border-200">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h1 className="text-2xl font-bold text-text-900 mb-2">
+                {definition.name}
+              </h1>
+              <p className="text-text-600">
+                {definition.description}
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-muted mb-1">
+                Última actualización
+              </div>
+              <div className="text-sm font-medium text-text-900">
+                {latestValue ? new Date(latestValue.ts).toLocaleDateString('es-AR') : 'N/A'}
+              </div>
+            </div>
+          </div>
+
+          {/* Metric Card */}
+          <MetricCard
+            id={metricId}
+            category={getCategory(metricId)}
+            title={definition.name}
+            value={latestValue?.value}
+            unit={getUnit(definition.unit)}
+            updatedAt={latestValue?.ts}
+            def={definition}
+            latest={latestValue ? {
+              metric_id: metricId,
+              ts: latestValue.ts,
+              value: latestValue.value,
+              metadata: {}
+            } : undefined}
+            className="border-0 shadow-none"
+          />
+        </div>
+
+        {/* Chart Section */}
+        <div className="bg-white p-6 rounded-lg border border-border-200">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-text-900">
+              Evolución Histórica
+            </h2>
+            <div className="flex items-center gap-2 text-sm text-muted">
+              <Calendar className="h-4 w-4" />
+              Últimos 90 días
+            </div>
           </div>
           
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900">{definition.name}</h1>
-            {definition.description && (
-              <p className="text-gray-600">{definition.description}</p>
-            )}
-          </div>
+          <TimeSeriesChart
+            data={chartData}
+            unit={definition.unit || ''}
+            height={400}
+            color="var(--info)"
+            name={definition.name}
+          />
         </div>
-      </header>
 
-      <main className="max-w-6xl mx-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Chart */}
-          <div className="lg:col-span-2">
-            <div className="bg-white p-6 rounded-lg border">
-              <TimeSeriesChart
-                data={chartData}
-                unit={definition.unit}
-                title={`${definition.name} - Últimos 90 días`}
-                description={definition.description}
-                height={400}
-              />
+        {/* How it's calculated */}
+        <div className="bg-white p-6 rounded-lg border border-border-200">
+          <h3 className="text-lg font-semibold text-text-900 mb-4 flex items-center gap-2">
+            <Info className="h-5 w-5" />
+            Cómo se calcula
+          </h3>
+          
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-medium text-text-900 mb-2">Fórmula</h4>
+              <div className="bg-surface-tertiary p-4 rounded-lg font-mono text-sm">
+                {definition.formula || 'Fórmula no disponible'}
+              </div>
+            </div>
+            
+            {definition.dependencies && definition.dependencies.length > 0 && (
+              <div>
+                <h4 className="font-medium text-text-900 mb-2">Dependencias</h4>
+                <div className="flex flex-wrap gap-2">
+                  {definition.dependencies.map((dep, index) => (
+                    <span 
+                      key={index}
+                      className="badge badge-info text-xs"
+                    >
+                      {dep}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <div>
+              <h4 className="font-medium text-text-900 mb-2">Interpretación</h4>
+              <div className="text-sm text-text-600 leading-relaxed">
+                {interpretation?.text || 'Interpretación no disponible'}
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Current Value */}
-            {latestValue && (
-              <div className="bg-white p-6 rounded-lg border">
-                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  Valor Actual
-                </h3>
-                <div className="space-y-2">
-                  <div className="text-3xl font-bold text-gray-900">
-                    {formatValue(latestValue.value, definition.unit)}
-                  </div>
-                  {definition.unit && (
-                    <div className="text-sm text-gray-500">{definition.unit}</div>
-                  )}
-                  <div className="text-sm text-gray-500">
-                    {formatDate(latestValue.ts)}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Interpretation */}
-            {interpretation && (
-              <div className="bg-white p-6 rounded-lg border">
-                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Info className="h-5 w-5" />
-                  Interpretación
-                </h3>
-                <div className={`p-3 rounded-lg ${
-                  interpretation.tone === "positivo" ? "bg-green-50 text-green-800" :
-                  interpretation.tone === "negativo" ? "bg-red-50 text-red-800" :
-                  "bg-gray-50 text-gray-800"
-                }`}>
-                  <p className="text-sm font-medium">{interpretation.text}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Metric Details */}
-            <div className="bg-white p-6 rounded-lg border">
-              <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                Detalles
+        {/* Recent Data Table */}
+        {chartData.length > 0 && (
+          <div className="bg-white p-6 rounded-lg border border-border-200">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-text-900">
+                Datos Recientes
               </h3>
-              <div className="space-y-3 text-sm">
-                <div>
-                  <span className="font-medium text-gray-700">Categoría:</span>
-                  <span className="ml-2 text-gray-600">{definition.category}</span>
-                </div>
-                {definition.formula && (
-                  <div>
-                    <span className="font-medium text-gray-700">Fórmula:</span>
-                    <div className="mt-1 p-2 bg-gray-50 rounded text-xs font-mono">
-                      {definition.formula}
-                    </div>
-                  </div>
-                )}
-                {definition.dependencies && definition.dependencies.length > 0 && (
-                  <div>
-                    <span className="font-medium text-gray-700">Dependencias:</span>
-                    <div className="mt-1 flex flex-wrap gap-1">
-                      {definition.dependencies.map((dep) => (
-                        <span
-                          key={dep}
-                          className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
-                        >
-                          {dep}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {definition.tags && definition.tags.length > 0 && (
-                  <div>
-                    <span className="font-medium text-gray-700">Etiquetas:</span>
-                    <div className="mt-1 flex flex-wrap gap-1">
-                      {definition.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <button className="flex items-center gap-2 px-3 py-2 text-sm text-info hover:bg-info-light rounded-lg transition-colors">
+                <Download className="h-4 w-4" />
+                Exportar CSV
+              </button>
             </div>
-
-            {/* Data Points Info */}
-            <div className="bg-white p-6 rounded-lg border">
-              <h3 className="font-semibold text-gray-900 mb-4">Información de Datos</h3>
-              <div className="space-y-2 text-sm text-gray-600">
-                <div>
-                  Puntos de datos: {chartData.length}
-                </div>
-                <div>
-                  Período: Últimos 90 días
-                </div>
-                {historicalData?.count && (
-                  <div>
-                    Total disponible: {historicalData.count}
-                  </div>
-                )}
-              </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border-200">
+                    <th className="text-left py-2 font-medium text-text-700">Fecha</th>
+                    <th className="text-right py-2 font-medium text-text-700">Valor</th>
+                    <th className="text-right py-2 font-medium text-text-700">Cambio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {chartData.slice(-10).reverse().map((point: any, index: number) => {
+                    const prevPoint = chartData[chartData.length - 2 - index];
+                    const change = prevPoint ? point.value - prevPoint.value : 0;
+                    const changePercent = prevPoint ? (change / prevPoint.value) * 100 : 0;
+                    
+                    return (
+                      <tr key={point.ts} className="border-b border-border-200 last:border-b-0">
+                        <td className="py-2 text-text-600">
+                          {new Date(point.ts).toLocaleDateString('es-AR')}
+                        </td>
+                        <td className="py-2 text-right font-medium text-text-900">
+                          {formatValue(point.value, getUnit(definition.unit))}
+                        </td>
+                        <td className="py-2 text-right">
+                          {prevPoint ? (
+                            <span className={`text-sm ${
+                              change > 0 ? 'text-positive' : change < 0 ? 'text-negative' : 'text-muted'
+                            }`}>
+                              {change > 0 ? '+' : ''}{changePercent.toFixed(1)}%
+                            </span>
+                          ) : (
+                            <span className="text-sm text-muted">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
-        </div>
+        )}
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

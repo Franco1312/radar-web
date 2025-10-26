@@ -5,49 +5,56 @@ import type { Health } from "@/types/health";
 interface HealthBadgeProps {
   health: Health;
   className?: string;
+  variant?: 'ok' | 'warn' | 'crit';
 }
 
-export function HealthBadge({ health, className }: HealthBadgeProps) {
+export function HealthBadge({ health, className, variant }: HealthBadgeProps) {
   const getStatusConfig = (status: string) => {
     switch (status.toLowerCase()) {
       case "healthy":
         return {
           icon: CheckCircle,
           text: "Sistema Operativo",
-          className: "bg-green-100 text-green-800 border-green-200",
-          iconClassName: "text-green-600",
+          variant: "ok" as const,
         };
       case "degraded":
         return {
           icon: AlertCircle,
-          text: "Sistema Degradado",
-          className: "bg-amber-100 text-amber-800 border-amber-200",
-          iconClassName: "text-amber-600",
+          text: "Sistema Degradado", 
+          variant: "warn" as const,
         };
       case "down":
       default:
         return {
           icon: XCircle,
           text: "Sistema Inactivo",
-          className: "bg-red-100 text-red-800 border-red-200",
-          iconClassName: "text-red-600",
+          variant: "crit" as const,
         };
     }
   };
 
   const config = getStatusConfig(health.status);
   const Icon = config.icon;
+  const badgeVariant = variant || config.variant;
+
+  const variantClasses = {
+    ok: "badge-positive",
+    warn: "badge-warning", 
+    crit: "badge-negative"
+  };
 
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium",
-        config.className,
+        "badge",
+        variantClasses[badgeVariant],
         className
       )}
+      role="status"
+      aria-live="polite"
     >
-      <Icon className={cn("h-4 w-4", config.iconClassName)} />
-      <span>{config.text}</span>
+      <Icon className="h-3 w-3 mr-1" />
+      <span className="text-xs font-medium">{config.text}</span>
     </div>
   );
 }

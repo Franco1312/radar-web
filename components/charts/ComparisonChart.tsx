@@ -7,36 +7,40 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Area,
-  AreaChart,
+  Legend,
 } from "recharts";
 import { formatDate } from "@/lib/date";
 import { formatValue } from "@/lib/format/number";
 import { cn } from "@/lib/utils";
 
-interface TimeSeriesChartProps {
+interface ComparisonChartProps {
   data: Array<{
     ts: string;
-    value: number;
+    series1: number;
+    series2: number;
     [key: string]: any;
   }>;
-  unit?: string;
+  series1Name: string;
+  series2Name: string;
+  series1Unit?: string;
+  series2Unit?: string;
   height?: number;
   className?: string;
-  showArea?: boolean;
-  color?: string;
-  name?: string;
+  series1Color?: string;
+  series2Color?: string;
 }
 
-export const TimeSeriesChart = memo(function TimeSeriesChart({
+export const ComparisonChart = memo(function ComparisonChart({
   data,
-  unit = "",
+  series1Name,
+  series2Name,
+  series1Unit = "",
+  series2Unit = "",
   height = 300,
   className,
-  showArea = true,
-  color = "var(--info)",
-  name = "Valor"
-}: TimeSeriesChartProps) {
+  series1Color = "var(--info)",
+  series2Color = "var(--positive)"
+}: ComparisonChartProps) {
   if (!data || data.length === 0) {
     return (
       <div 
@@ -53,7 +57,7 @@ export const TimeSeriesChart = memo(function TimeSeriesChart({
     );
   }
 
-  const formatTooltipValue = (value: number) => {
+  const formatTooltipValue = (value: number, unit: string) => {
     return formatValue(value, unit);
   };
 
@@ -65,12 +69,10 @@ export const TimeSeriesChart = memo(function TimeSeriesChart({
     });
   };
 
-  const ChartComponent = showArea ? AreaChart : LineChart;
-
   return (
     <div className={cn("w-full", className)} style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <ChartComponent data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+        <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid 
             strokeDasharray="3 3" 
             stroke="var(--border-300)"
@@ -92,46 +94,47 @@ export const TimeSeriesChart = memo(function TimeSeriesChart({
             fontSize={12}
             tickLine={false}
             axisLine={false}
-            tickFormatter={(value) => formatTooltipValue(value)}
+            tickFormatter={(value) => formatTooltipValue(value, series1Unit)}
           />
           <Tooltip
             content={({ active, payload, label }) => {
               if (active && payload && payload.length) {
-                const data = payload[0];
                 return (
                   <div className="bg-white p-3 border border-border-200 rounded-lg shadow-lg">
-                    <div className="text-sm text-text-600 mb-1">
+                    <div className="text-sm text-text-600 mb-2">
                       {formatDate(label)}
                     </div>
-                    <div className="text-sm font-medium text-text-900">
-                      {name}: {formatTooltipValue(data.value as number)}
-                    </div>
+                    {payload.map((entry, index) => (
+                      <div key={index} className="text-sm font-medium" style={{ color: entry.color }}>
+                        {entry.name}: {formatTooltipValue(entry.value as number, index === 0 ? series1Unit : series2Unit)}
+                      </div>
+                    ))}
                   </div>
                 );
               }
               return null;
             }}
           />
-          {showArea ? (
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke={color}
-              fill={color}
-              fillOpacity={0.12}
-              strokeWidth={2}
-            />
-          ) : (
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke={color}
-              strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 4, fill: color }}
-            />
-          )}
-        </ChartComponent>
+          <Legend />
+          <Line
+            type="monotone"
+            dataKey="series1"
+            stroke={series1Color}
+            strokeWidth={2}
+            name={series1Name}
+            dot={false}
+            activeDot={{ r: 4, fill: series1Color }}
+          />
+          <Line
+            type="monotone"
+            dataKey="series2"
+            stroke={series2Color}
+            strokeWidth={2}
+            name={series2Name}
+            dot={false}
+            activeDot={{ r: 4, fill: series2Color }}
+          />
+        </LineChart>
       </ResponsiveContainer>
     </div>
   );
