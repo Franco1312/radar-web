@@ -16,7 +16,6 @@ export const DEFAULT_DASHBOARD_METRICS = [
   "delta.base_30d.pct",
   "ratio.reserves_to_base",
   "fx.vol_7d.usd",
-  "fx.trend_14v30.usd",
   "data.freshness.bcra.cambiarias.usd"
 ] as const;
 
