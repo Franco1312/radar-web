@@ -106,23 +106,24 @@ export default function DashboardPage() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-surface-secondary">
-      <Topbar 
-        health={health} 
-        lastUpdated={lastUpdate?.toISOString()}
-        onRefresh={() => window.location.reload()}
-      />
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+        <Topbar
+          health={health}
+          lastUpdated={lastUpdate?.toISOString()}
+          onRefresh={() => window.location.reload()}
+        />
 
-      <main className="max-w-7xl mx-auto p-6 space-y-8">
+        <main className="max-w-7xl mx-auto p-6 space-y-8">
         {/* Reading of the day - Soft Enhanced */}
         <section 
-          className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-blue-50/30 p-8 rounded-xl border border-gray-200 shadow-sm"
+          className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 p-8 rounded-xl border border-blue-200/50 shadow-md"
           aria-live="polite"
         >
           {/* Subtle background decoration */}
-          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-100/30 rounded-full -translate-y-12 translate-x-12"></div>
-          <div className="absolute bottom-0 left-0 w-20 h-20 bg-emerald-100/30 rounded-full translate-y-10 -translate-x-10"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-200/20 to-indigo-200/20 rounded-full -translate-y-16 translate-x-16"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-emerald-200/20 to-blue-200/20 rounded-full translate-y-12 -translate-x-12"></div>
+          <div className="absolute top-1/2 left-1/2 w-16 h-16 bg-gradient-to-br from-purple-200/15 to-pink-200/15 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
           
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
@@ -141,17 +142,17 @@ export default function DashboardPage() {
               </div>
             </div>
             
-            <div className="bg-white/60 backdrop-blur-sm p-5 rounded-lg border border-gray-100">
+            <div className="bg-white/70 backdrop-blur-sm p-6 rounded-lg border border-blue-100/50 shadow-sm">
               <div className="text-base text-gray-700 leading-relaxed">
                 {watchItems.length > 0 ? (
                   <p className="flex items-start gap-3">
-                    <span className="text-lg text-blue-500">📊</span>
-                    <span>{watchItems[0].description}</span>
+                    <span className="text-xl text-blue-500">📊</span>
+                    <span className="font-medium">{watchItems[0].description}</span>
                   </p>
                 ) : (
                   <p className="flex items-start gap-3">
-                    <span className="text-lg text-emerald-500">📈</span>
-                    <span>Las métricas se mantienen estables. No se detectaron cambios significativos en el corto plazo.</span>
+                    <span className="text-xl text-emerald-500">📈</span>
+                    <span className="font-medium">Las métricas se mantienen estables. No se detectaron cambios significativos en el corto plazo.</span>
                   </p>
                 )}
               </div>

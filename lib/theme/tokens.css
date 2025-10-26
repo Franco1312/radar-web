@@ -32,8 +32,16 @@
   
   /* === SUPERFICIES === */
   --surface: #ffffff;         /* white */
-  --surface-secondary: #f9fafb; /* gray-50 */
-  --surface-tertiary: #f3f4f6;  /* gray-100 */
+  --surface-secondary: #f8fafc; /* slate-50 - más azulado */
+  --surface-tertiary: #f1f5f9;  /* slate-100 - más azulado */
+  
+  /* === SUPERFICIES CON COLOR SUAVE === */
+  --surface-card: #fefefe;     /* casi blanco */
+  --surface-accent: #f1f5f9;   /* slate-100 */
+  --surface-muted: #e2e8f0;    /* slate-200 */
+  --surface-warm: #fef7ed;     /* orange-50 */
+  --surface-cool: #f0f9ff;     /* sky-50 */
+  --surface-green: #f0fdf4;    /* green-50 */
   
   /* === BORDES === */
   --border-200: #e5e7eb;      /* gray-200 */
@@ -179,4 +187,29 @@
 .badge-muted {
   background-color: var(--surface-tertiary);
   color: var(--muted-500);
+}
+
+/* === SUPERFICIES CON COLOR === */
+.bg-surface-card { background-color: var(--surface-card); }
+.bg-surface-accent { background-color: var(--surface-accent); }
+.bg-surface-muted { background-color: var(--surface-muted); }
+.bg-surface-warm { background-color: var(--surface-warm); }
+.bg-surface-cool { background-color: var(--surface-cool); }
+.bg-surface-green { background-color: var(--surface-green); }
+
+/* === GRADIENTES SUAVES === */
+.bg-gradient-warm {
+  background: linear-gradient(135deg, var(--surface-warm) 0%, var(--surface) 100%);
+}
+
+.bg-gradient-cool {
+  background: linear-gradient(135deg, var(--surface-cool) 0%, var(--surface) 100%);
+}
+
+.bg-gradient-green {
+  background: linear-gradient(135deg, var(--surface-green) 0%, var(--surface) 100%);
+}
+
+.bg-gradient-accent {
+  background: linear-gradient(135deg, var(--surface-accent) 0%, var(--surface) 100%);
 }

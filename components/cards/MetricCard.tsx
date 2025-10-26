@@ -164,7 +164,7 @@ export const MetricCard = memo(function MetricCard({
   return (
     <Card 
       className={cn(
-        "relative overflow-hidden shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group bg-white",
+        "relative overflow-hidden shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group bg-white/80 backdrop-blur-sm",
         trendStyle.border,
         onClick && "hover:scale-[1.02]",
         className
@@ -174,8 +174,9 @@ export const MetricCard = memo(function MetricCard({
       tabIndex={onClick ? 0 : undefined}
       aria-label={`Ver detalles de ${title}`}
     >
-      {/* Subtle background decoration */}
-      <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-gray-50/30 to-transparent rounded-full -translate-y-8 translate-x-8"></div>
+      {/* Subtle background decoration with color */}
+      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-100/20 to-indigo-100/20 rounded-full -translate-y-10 translate-x-10"></div>
+      <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-emerald-100/20 to-blue-100/20 rounded-full translate-y-8 -translate-x-8"></div>
       
       <CardHeader className="pb-4 relative z-10">
         <div className="flex items-center justify-between">
@@ -221,7 +222,7 @@ export const MetricCard = memo(function MetricCard({
           </div>
           
           <div className={cn(
-            "text-sm leading-relaxed p-3 rounded-lg bg-gray-50/50",
+            "text-sm leading-relaxed p-4 rounded-lg bg-gradient-to-r from-gray-50/60 to-blue-50/40 border border-gray-100/50",
             toneClasses[interpretationTone]
           )}>
             {calculatedInterpretation}

@@ -20,7 +20,7 @@ export const Topbar = memo(function Topbar({
 }: TopbarProps) {
   return (
     <header className={cn(
-      "bg-white border-b border-border-200 px-6 py-4",
+      "bg-white/80 backdrop-blur-sm border-b border-blue-200/50 px-6 py-4 shadow-sm",
       className
     )}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">

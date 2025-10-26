@@ -11,7 +11,7 @@ export const SiteFooter = memo(function SiteFooter({
 }: SiteFooterProps) {
   return (
     <footer className={cn(
-      "bg-surface-secondary border-t border-border-200 px-6 py-8",
+      "bg-gradient-to-r from-slate-50 to-blue-50/30 border-t border-blue-200/50 px-6 py-8",
       className
     )}>
       <div className="max-w-7xl mx-auto">

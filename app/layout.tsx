@@ -47,7 +47,7 @@ export default function RootLayout({
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
           </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-surface-secondary`}
       >
         <QueryClientProvider client={queryClient}>
           {children}
