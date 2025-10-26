@@ -15,7 +15,7 @@ import Link from "next/link";
 export default function DashboardPage() {
   const { data: health, isLoading: healthLoading, error: healthError } = useHealth();
   const { data: definitions, isLoading: defsLoading, error: defsError } = useMetricDefinitions();
-  const { data: latestData, isLoading: latestLoading, error: latestError } = useLatest(DEFAULT_DASHBOARD_METRICS);
+  const { data: latestData, isLoading: latestLoading, error: latestError } = useLatest([...DEFAULT_DASHBOARD_METRICS]);
 
   // Create a map of definitions for quick lookup
   const defsMap = useMemo(() => {

@@ -22,7 +22,7 @@ export function MetricCard({
   onClick, 
   className 
 }: MetricCardProps) {
-  const trend = getMetricTrend(latest, reference);
+  const trend = getMetricTrend(latest || null, reference || null);
   const interpretation = interpret(def.id, {
     value: latest?.value || 0,
     metadata: latest?.metadata,

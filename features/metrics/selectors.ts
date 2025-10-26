@@ -41,7 +41,7 @@ export function computeTrend(
 /**
  * Get the last valid point from an array of points
  */
-export function lastValid(points: { ts: string; value: any }[]): { ts: string; value: number } | null {
+export function lastValid(points: { ts: string; value: any; metadata?: unknown }[]): { ts: string; value: number } | null {
   for (let i = points.length - 1; i >= 0; i--) {
     const point = points[i];
     const normalizedValue = normalizeValue(point.value);
@@ -60,7 +60,7 @@ export function lastValid(points: { ts: string; value: any }[]): { ts: string; v
 /**
  * Get the last two valid points for computing deltas
  */
-export function lastTwo(points: { ts: string; value: any }[]): [LatestItem | null, LatestItem | null] {
+export function lastTwo(points: { ts: string; value: any; metadata?: unknown }[]): [LatestItem | null, LatestItem | null] {
   const validPoints: LatestItem[] = [];
   
   for (let i = points.length - 1; i >= 0; i--) {

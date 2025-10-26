@@ -38,7 +38,9 @@ export function ChartSkeleton({ height = 300 }: { height?: number }) {
         <LoadingSkeleton className="h-6 w-48 mb-2" />
         <LoadingSkeleton className="h-4 w-32" />
       </div>
-      <LoadingSkeleton className="w-full" style={{ height }} />
+      <div className="w-full" style={{ height }}>
+        <LoadingSkeleton className="w-full h-full" />
+      </div>
     </div>
   );
 }
