@@ -16,7 +16,7 @@ import Link from "next/link";
 import { ArrowLeft, Info, Calendar, TrendingUp, Download } from "lucide-react";
 
 // Dynamic import for chart
-const TimeSeriesChart = dynamic(() => import("@/components/charts/TimeSeriesChart"), {
+const TimeSeriesChart = dynamic(() => import("@/components/charts/TimeSeriesChart").then(mod => ({ default: mod.TimeSeriesChart })), {
   loading: () => <div className="h-80 bg-surface-tertiary rounded-lg animate-pulse" />
 });
 

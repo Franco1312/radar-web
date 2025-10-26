@@ -101,7 +101,7 @@ export const TimeSeriesChart = memo(function TimeSeriesChart({
                 return (
                   <div className="bg-white p-3 border border-border-200 rounded-lg shadow-lg">
                     <div className="text-sm text-text-600 mb-1">
-                      {formatDate(label)}
+                      {label ? new Date(label).toLocaleDateString('es-AR') : ''}
                     </div>
                     <div className="text-sm font-medium text-text-900">
                       {name}: {formatTooltipValue(data.value as number)}

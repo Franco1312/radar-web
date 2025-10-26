@@ -102,7 +102,7 @@ export const ComparisonChart = memo(function ComparisonChart({
                 return (
                   <div className="bg-white p-3 border border-border-200 rounded-lg shadow-lg">
                     <div className="text-sm text-text-600 mb-2">
-                      {formatDate(label)}
+                      {label ? new Date(label).toLocaleDateString('es-AR') : ''}
                     </div>
                     {payload.map((entry, index) => (
                       <div key={index} className="text-sm font-medium" style={{ color: entry.color }}>

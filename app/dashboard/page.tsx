@@ -16,11 +16,11 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 
 // Dynamic imports for charts
-const TimeSeriesChart = dynamic(() => import("@/components/charts/TimeSeriesChart"), {
+const TimeSeriesChart = dynamic(() => import("@/components/charts/TimeSeriesChart").then(mod => ({ default: mod.TimeSeriesChart })), {
   loading: () => <div className="h-80 bg-surface-tertiary rounded-lg animate-pulse" />
 });
 
-const ComparisonChart = dynamic(() => import("@/components/charts/ComparisonChart"), {
+const ComparisonChart = dynamic(() => import("@/components/charts/ComparisonChart").then(mod => ({ default: mod.ComparisonChart })), {
   loading: () => <div className="h-80 bg-surface-tertiary rounded-lg animate-pulse" />
 });
 
@@ -61,16 +61,16 @@ export default function DashboardPage() {
       const def = defsMap.get(item.metric_id);
       if (!def) return null;
       
-      const interpretation = getInterpretation(item.metric_id, item.value, item.metadata);
+      const interpretation = getInterpretation(item.metric_id, typeof item.value === 'string' ? parseFloat(item.value) : item.value, item.metadata);
       
       return {
         id: item.metric_id,
         name: def.name,
-        value: item.value,
-        trend: interpretation.tone === 'positive' ? 'up' : interpretation.tone === 'negative' ? 'down' : 'flat',
+        value: typeof item.value === 'string' ? parseFloat(item.value) : item.value,
+        trend: interpretation.tone === 'positive' ? 'up' : interpretation.tone === 'negative' ? 'down' : 'flat' as 'up' | 'down' | 'flat',
         interpretation: interpretation.text
       };
-    }).filter(Boolean);
+    }).filter((item): item is NonNullable<typeof item> => item !== null);
 
     return generateWatchItems(metrics);
   }, [latestData, definitions, defsMap]);
@@ -173,7 +173,7 @@ export default function DashboardPage() {
                     id={metricId}
                     category={getCategory(metricId)}
                     title={def.name}
-                    value={latest?.value}
+                    value={typeof latest?.value === 'string' ? parseFloat(latest.value) : latest?.value}
                     unit={getUnit(def.unit)}
                     updatedAt={latest?.ts}
                     def={def}
