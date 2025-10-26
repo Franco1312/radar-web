@@ -115,42 +115,42 @@ export default function DashboardPage() {
       />
 
       <main className="max-w-7xl mx-auto p-6 space-y-8">
-        {/* Reading of the day - Enhanced */}
+        {/* Reading of the day - Soft Enhanced */}
         <section 
-          className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-8 rounded-2xl border-2 border-blue-200 shadow-lg"
+          className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-blue-50/30 p-8 rounded-xl border border-gray-200 shadow-sm"
           aria-live="polite"
         >
-          {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full -translate-y-16 translate-x-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-green-400/20 to-blue-400/20 rounded-full translate-y-12 -translate-x-12"></div>
+          {/* Subtle background decoration */}
+          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-100/30 rounded-full -translate-y-12 translate-x-12"></div>
+          <div className="absolute bottom-0 left-0 w-20 h-20 bg-emerald-100/30 rounded-full translate-y-10 -translate-x-10"></div>
           
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-xl font-semibold text-gray-900">
                   Lectura del día
                 </h2>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-500">
                   Análisis económico en tiempo real
                 </p>
               </div>
             </div>
             
-            <div className="bg-white/80 backdrop-blur-sm p-6 rounded-xl border border-white/50 shadow-lg">
-              <div className="text-lg text-gray-800 leading-relaxed font-medium">
+            <div className="bg-white/60 backdrop-blur-sm p-5 rounded-lg border border-gray-100">
+              <div className="text-base text-gray-700 leading-relaxed">
                 {watchItems.length > 0 ? (
                   <p className="flex items-start gap-3">
-                    <span className="text-2xl">📊</span>
+                    <span className="text-lg text-blue-500">📊</span>
                     <span>{watchItems[0].description}</span>
                   </p>
                 ) : (
                   <p className="flex items-start gap-3">
-                    <span className="text-2xl">📈</span>
+                    <span className="text-lg text-emerald-500">📈</span>
                     <span>Las métricas se mantienen estables. No se detectaron cambios significativos en el corto plazo.</span>
                   </p>
                 )}
@@ -159,15 +159,15 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* Metrics Grid - Enhanced */}
+        {/* Metrics Grid - Soft Enhanced */}
         <section>
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="p-2 bg-emerald-100 rounded-lg">
+              <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-xl font-semibold text-gray-900">
               Métricas Principales
             </h2>
           </div>
@@ -268,7 +268,7 @@ export default function DashboardPage() {
         {watchItems.length > 0 && (
           <section>
             <WhatToWatchNow 
-              items={watchItems.map(item => ({
+              items={watchItems.map((item: any) => ({
                 ...item,
                 onClick: () => {
                   if (item.metricId) {

@@ -29,30 +29,24 @@ export function TrendIcon({
   switch (direction) {
     case "up":
       return (
-        <div className="relative">
-          <div className="absolute inset-0 bg-green-400 rounded-full animate-ping opacity-75"></div>
-          <ArrowUpRight 
-            {...iconProps}
-            className={cn(iconProps.className, "text-green-600 relative z-10")}
-          />
-        </div>
+        <ArrowUpRight 
+          {...iconProps}
+          className={cn(iconProps.className, "text-green-600")}
+        />
       );
     case "down":
       return (
-        <div className="relative">
-          <div className="absolute inset-0 bg-red-400 rounded-full animate-ping opacity-75"></div>
-          <ArrowDownRight 
-            {...iconProps}
-            className={cn(iconProps.className, "text-red-600 relative z-10")}
-          />
-        </div>
+        <ArrowDownRight 
+          {...iconProps}
+          className={cn(iconProps.className, "text-red-600")}
+        />
       );
     case "flat":
     default:
       return (
         <Minus 
           {...iconProps}
-          className={cn(iconProps.className, "text-gray-500")}
+          className={cn(iconProps.className, "text-gray-400")}
         />
       );
   }

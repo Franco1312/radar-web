@@ -37,15 +37,15 @@ const categoryLabels = {
 };
 
 const categoryColors = {
-  deltas: "bg-gradient-to-r from-blue-500 to-indigo-600 text-white",
-  ratios: "bg-gradient-to-r from-emerald-500 to-green-600 text-white",
-  fx: "bg-gradient-to-r from-amber-500 to-orange-600 text-white", 
-  monetary: "bg-gradient-to-r from-purple-500 to-pink-600 text-white",
-  data_health: "bg-gradient-to-r from-red-500 to-rose-600 text-white"
+  deltas: "bg-blue-50 text-blue-700 border-blue-200",
+  ratios: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  fx: "bg-amber-50 text-amber-700 border-amber-200", 
+  monetary: "bg-purple-50 text-purple-700 border-purple-200",
+  data_health: "bg-rose-50 text-rose-700 border-rose-200"
 };
 
 const categoryIcons = {
-  deltas: "📊",
+  deltas: "📈",
   ratios: "⚖️",
   fx: "💱", 
   monetary: "💰",
@@ -137,24 +137,24 @@ export const MetricCard = memo(function MetricCard({
     switch (trend) {
       case 'up':
         return {
-          bg: "bg-gradient-to-br from-green-50 to-emerald-100",
-          border: "border-green-200",
-          icon: "↗️",
-          color: "text-green-700"
+          bg: "bg-green-50/50",
+          border: "border-green-100",
+          icon: "↗",
+          color: "text-green-600"
         };
       case 'down':
         return {
-          bg: "bg-gradient-to-br from-red-50 to-rose-100", 
-          border: "border-red-200",
-          icon: "↘️",
-          color: "text-red-700"
+          bg: "bg-red-50/50", 
+          border: "border-red-100",
+          icon: "↘",
+          color: "text-red-600"
         };
       default:
         return {
-          bg: "bg-gradient-to-br from-gray-50 to-slate-100",
-          border: "border-gray-200", 
-          icon: "➡️",
-          color: "text-gray-700"
+          bg: "bg-gray-50/50",
+          border: "border-gray-100", 
+          icon: "→",
+          color: "text-gray-500"
         };
     }
   };
@@ -164,10 +164,9 @@ export const MetricCard = memo(function MetricCard({
   return (
     <Card 
       className={cn(
-        "relative overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group",
-        trendStyle.bg,
+        "relative overflow-hidden shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group bg-white",
         trendStyle.border,
-        onClick && "hover:scale-105",
+        onClick && "hover:scale-[1.02]",
         className
       )}
       onClick={onClick}
@@ -175,17 +174,16 @@ export const MetricCard = memo(function MetricCard({
       tabIndex={onClick ? 0 : undefined}
       aria-label={`Ver detalles de ${title}`}
     >
-      {/* Background decoration */}
-      <div className="absolute top-0 right-0 w-20 h-20 bg-white/20 rounded-full -translate-y-10 translate-x-10"></div>
-      <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full translate-y-8 -translate-x-8"></div>
+      {/* Subtle background decoration */}
+      <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-gray-50/30 to-transparent rounded-full -translate-y-8 translate-x-8"></div>
       
       <CardHeader className="pb-4 relative z-10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="text-2xl">
+            <div className="text-xl text-gray-600">
               {categoryIcons[category]}
             </div>
-            <span className={cn("px-3 py-1 rounded-full text-xs font-semibold shadow-sm", categoryColors[category])}>
+            <span className={cn("px-2.5 py-1 rounded-md text-xs font-medium border", categoryColors[category])}>
               {categoryLabels[category]}
             </span>
             {def?.description && (
@@ -195,16 +193,16 @@ export const MetricCard = memo(function MetricCard({
               />
             )}
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">{trendStyle.icon}</span>
+          <div className="flex items-center gap-1">
+            <span className="text-lg font-medium text-gray-400">{trendStyle.icon}</span>
             <TrendIcon 
               direction={calculatedTrend} 
-              size="lg"
+              size="sm"
               className={trendStyle.color}
             />
           </div>
         </div>
-        <CardTitle className="text-lg font-bold text-gray-900 mt-2">
+        <CardTitle className="text-lg font-semibold text-gray-900 mt-2">
           {title}
         </CardTitle>
       </CardHeader>
@@ -212,26 +210,26 @@ export const MetricCard = memo(function MetricCard({
       <CardContent className="pt-0 relative z-10">
         <div className="space-y-4">
           <div className="flex items-baseline gap-3">
-            <span className="text-4xl font-black text-gray-900">
+            <span className="text-3xl font-bold text-gray-900">
               {value !== undefined ? formatValue(value, unit) : "N/A"}
             </span>
             {unit !== 'other' && (
-              <span className="text-lg font-semibold text-gray-600">
+              <span className="text-base font-medium text-gray-500">
                 {unit === 'percent' ? '%' : unit === 'ARS' ? 'ARS' : unit === 'USD' ? 'USD' : ''}
               </span>
             )}
           </div>
           
           <div className={cn(
-            "text-base leading-relaxed font-medium p-3 rounded-lg bg-white/60 backdrop-blur-sm",
+            "text-sm leading-relaxed p-3 rounded-lg bg-gray-50/50",
             toneClasses[interpretationTone]
           )}>
             {calculatedInterpretation}
           </div>
           
           {updatedAt && (
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-2 text-xs text-gray-400">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>Actualizado: {formatDate(updatedAt)}</span>
