@@ -72,12 +72,18 @@ export default function MetricDetailPage() {
   }
 
   if (hasError) {
+    // Check if it's a 500 error (metric not found/no data)
+    const isMetricNotFound = histError?.message?.includes('500') || defError?.message?.includes('500');
+    
     return (
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-6xl mx-auto">
           <ErrorState
-            title="Error al cargar la métrica"
-            message="No se pudo cargar la información de la métrica seleccionada."
+            title={isMetricNotFound ? "Métrica sin datos" : "Error al cargar la métrica"}
+            message={isMetricNotFound 
+              ? "Esta métrica no tiene datos disponibles en el servidor de métricas."
+              : "No se pudo cargar la información de la métrica seleccionada."
+            }
             onRetry={() => window.location.reload()}
           />
         </div>

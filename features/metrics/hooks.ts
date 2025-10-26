@@ -54,7 +54,11 @@ export function useHistorical(
     enabled: !!metricId,
     refetchInterval: REFETCH_INTERVALS.HISTORICAL,
     staleTime: 60000, // 1 minute
-    retry: 3,
+    retry: (failureCount, error: any) => {
+      // Don't retry on 500 errors (metric not found)
+      if (error?.status === 500) return false;
+      return failureCount < 3;
+    },
   });
 }
 
