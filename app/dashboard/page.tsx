@@ -115,33 +115,63 @@ export default function DashboardPage() {
       />
 
       <main className="max-w-7xl mx-auto p-6 space-y-8">
-        {/* Reading of the day */}
+        {/* Reading of the day - Enhanced */}
         <section 
-          className="bg-white p-6 rounded-lg border border-border-200"
+          className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-8 rounded-2xl border-2 border-blue-200 shadow-lg"
           aria-live="polite"
         >
-          <h2 className="text-lg font-semibold text-text-900 mb-3">
-            Lectura del día
-          </h2>
-          <div className="text-text-700 leading-relaxed">
-            {watchItems.length > 0 ? (
-              <p>
-                {watchItems[0].description}
-              </p>
-            ) : (
-              <p>
-                Las métricas se mantienen estables. No se detectaron cambios significativos en el corto plazo.
-              </p>
-            )}
+          {/* Background decoration */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full -translate-y-16 translate-x-16"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-green-400/20 to-blue-400/20 rounded-full translate-y-12 -translate-x-12"></div>
+          
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Lectura del día
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Análisis económico en tiempo real
+                </p>
+              </div>
+            </div>
+            
+            <div className="bg-white/80 backdrop-blur-sm p-6 rounded-xl border border-white/50 shadow-lg">
+              <div className="text-lg text-gray-800 leading-relaxed font-medium">
+                {watchItems.length > 0 ? (
+                  <p className="flex items-start gap-3">
+                    <span className="text-2xl">📊</span>
+                    <span>{watchItems[0].description}</span>
+                  </p>
+                ) : (
+                  <p className="flex items-start gap-3">
+                    <span className="text-2xl">📈</span>
+                    <span>Las métricas se mantienen estables. No se detectaron cambios significativos en el corto plazo.</span>
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Metrics Grid */}
+        {/* Metrics Grid - Enhanced */}
         <section>
-          <h2 className="text-lg font-semibold text-text-900 mb-4">
-            Métricas Principales
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Métricas Principales
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {DEFAULT_DASHBOARD_METRICS.map((metricId) => {
               const def = defsMap.get(metricId);
               const latest = latestData?.items?.find(item => item.metric_id === metricId);
@@ -168,7 +198,7 @@ export default function DashboardPage() {
               };
 
               return (
-                <Link key={metricId} href={`/metric/${metricId}`}>
+                <Link key={metricId} href={`/metric/${metricId}`} className="block h-full">
                   <MetricCard
                     id={metricId}
                     category={getCategory(metricId)}
@@ -178,7 +208,7 @@ export default function DashboardPage() {
                     updatedAt={latest?.ts}
                     def={def}
                     latest={latest}
-                    className="h-full"
+                    className="h-full min-h-[280px]"
                   />
                 </Link>
               );
