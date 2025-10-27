@@ -178,44 +178,34 @@ function interpretBaseMonetaryChange(value: number, metricId: string): Interpret
  * Interpret reserves to base ratio
  */
 function interpretReservesRatio(value: number): Interpretation {
-  // Convert to percentage for easier understanding
-  const percentage = value * 100;
+  // Format value as decimal with 2-3 decimals
+  const formattedValue = value.toFixed(3);
   
-  if (percentage > 50) {
+  if (value >= 0.80) {
     return {
-      title: "Las reservas cubren más de la mitad de los pesos",
-      explanation: `Por cada peso en circulación, hay ${value.toFixed(2)} dólares de respaldo.`,
-      why_it_matters: "Esto significa que el país tiene una buena capacidad para mantener estable el precio del dólar.",
-      what_to_watch: "Si este nivel se mantiene, el dólar debería mantenerse más estable.",
+      title: "Respaldo del Peso en Reservas",
+      explanation: `Respaldo sólido: las reservas cubren la mayor parte del dinero emitido. Por cada $1 en la economía, hay ${formattedValue} en reservas.`,
+      why_it_matters: "Cuanto mayor el respaldo, más fácil es para el Banco Central sostener la estabilidad del dólar sin medidas adicionales.",
+      what_to_watch: "Si este ratio se mantiene alto, el dólar debería mantenerse más estable.",
       tone: "positive"
     };
   }
   
-  if (percentage > 30) {
+  if (value >= 0.50) {
     return {
-      title: "Las reservas cubren una parte importante de los pesos",
-      explanation: `Por cada peso en circulación, hay ${value.toFixed(2)} dólares de respaldo.`,
-      why_it_matters: "El país tiene una capacidad moderada para controlar el precio del dólar.",
-      what_to_watch: "Observar si este nivel se mantiene o si empieza a bajar.",
-      tone: "neutral"
-    };
-  }
-  
-  if (percentage > 15) {
-    return {
-      title: "Las reservas cubren una parte pequeña de los pesos",
-      explanation: `Por cada peso en circulación, hay ${value.toFixed(2)} dólares de respaldo.`,
-      why_it_matters: "Con menos respaldo, es más difícil mantener estable el precio del dólar.",
-      what_to_watch: "Si este nivel baja más, podría haber más volatilidad en el precio del dólar.",
+      title: "Respaldo del Peso en Reservas",
+      explanation: `Respaldo moderado: la estabilidad depende de las condiciones del mercado. Por cada $1 en la economía, hay ${formattedValue} en reservas.`,
+      why_it_matters: "Cuanto menor el respaldo, más difícil es para el Banco Central sostener la estabilidad del dólar sin medidas adicionales.",
+      what_to_watch: "Si este ratio sigue bajando, pueden aumentar los movimientos del dólar o anuncios de política monetaria.",
       tone: "warning"
     };
   }
   
   return {
-    title: "Las reservas cubren muy poco de los pesos",
-    explanation: `Por cada peso en circulación, hay ${value.toFixed(2)} dólares de respaldo.`,
-    why_it_matters: "Con tan poco respaldo, es muy difícil controlar el precio del dólar.",
-    what_to_watch: "Si este nivel no mejora, el dólar podría volverse muy volátil.",
+    title: "Respaldo del Peso en Reservas",
+    explanation: `Respaldo bajo: hay pocas reservas para sostener el valor del peso. Por cada $1 en la economía, hay ${formattedValue} en reservas.`,
+    why_it_matters: "Cuanto menor el respaldo, más difícil es para el Banco Central sostener la estabilidad del dólar sin medidas adicionales.",
+    what_to_watch: "Si este ratio sigue bajando, pueden aumentar los movimientos del dólar o anuncios de política monetaria.",
     tone: "negative"
   };
 }

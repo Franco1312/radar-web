@@ -40,16 +40,16 @@ export function formatMillionsUSD(value: number, decimals: number = 1): string {
   return `$${millions.toFixed(decimals)}M`;
 }
 
-export function formatRatio(value: number, decimals: number = 2): string {
+export function formatRatio(value: number, decimals: number = 3): string {
   if (isNaN(value)) return "N/A";
   
-  // Para ratios muy grandes, mostrar en formato más legible
-  if (value > 1000) {
-    return `${(value / 1000).toFixed(1)}K×`;
-  } else if (value > 1) {
-    return `${value.toFixed(2)}×`;
+  // Para ratios de reservas a base, mostrar como decimal simple
+  if (value < 1) {
+    return `${value.toFixed(3)}`;
+  } else if (value < 10) {
+    return `${value.toFixed(2)}`;
   } else {
-    return `${value.toFixed(2)}×`;
+    return `${value.toFixed(1)}`;
   }
 }
 
