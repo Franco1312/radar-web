@@ -45,7 +45,11 @@ export function formatRatio(value: number, decimals: number = 3): string {
   
   // Si el valor parece estar en centavos (muy grande), convertir a decimal
   let normalizedValue = value;
-  if (value > 100) {
+  if (value > 1000) {
+    // Si es muy grande (como 40570), dividir por 100,000 para obtener decimal
+    normalizedValue = value / 100000;
+  } else if (value > 100) {
+    // Si es moderadamente grande, dividir por 100
     normalizedValue = value / 100;
   }
   

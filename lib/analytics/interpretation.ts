@@ -179,7 +179,14 @@ function interpretBaseMonetaryChange(value: number, metricId: string): Interpret
  */
 function interpretReservesRatio(value: number): Interpretation {
   // Normalize value if it's in centavos (very large)
-  const normalizedValue = value > 100 ? value / 100 : value;
+  let normalizedValue = value;
+  if (value > 1000) {
+    // Si es muy grande (como 40570), dividir por 100,000 para obtener decimal
+    normalizedValue = value / 100000;
+  } else if (value > 100) {
+    // Si es moderadamente grande, dividir por 100
+    normalizedValue = value / 100;
+  }
   const formattedValue = normalizedValue.toFixed(3);
   
   if (normalizedValue >= 0.80) {
