@@ -8,7 +8,7 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
 import { getDateRange } from "@/lib/date";
-import { getInterpretation } from "@/lib/analytics/interpretation";
+import { getHumanCopy } from "@/lib/insights/humanCopy";
 import { formatValue } from "@/lib/format/number";
 import { useMemo } from "react";
 import dynamic from "next/dynamic";
@@ -25,10 +25,7 @@ export default function MetricDetailPage() {
   const metricId = params.id as string;
 
   const { data: definition, isLoading: defLoading, error: defError } = useMetricDefinition(metricId);
-  const { data: historicalData, isLoading: histLoading, error: histError } = useHistorical(
-    metricId,
-    getDateRange(90) // Last 90 days
-  );
+  const { data: historicalData, isLoading: histLoading, error: histError } = useHistorical(metricId);
 
   const isLoading = defLoading || histLoading;
   const hasError = defError || histError;
@@ -52,10 +49,13 @@ export default function MetricDetailPage() {
     return chartData[chartData.length - 1];
   }, [chartData]);
 
-  // Get interpretation
-  const interpretation = useMemo(() => {
+  // Get human copy interpretation
+  const humanCopy = useMemo(() => {
     if (!latestValue || !definition) return null;
-    return getInterpretation(metricId, latestValue.value, {});
+    return getHumanCopy(metricId, latestValue.value, {}, {
+      freshnessH: 24,
+      coverage30d: 85
+    });
   }, [latestValue, definition, metricId]);
 
   // Map category from metric ID
@@ -183,6 +183,11 @@ export default function MetricDetailPage() {
               value: latestValue.value,
               metadata: {}
             } : undefined}
+            humanCopy={humanCopy}
+            contextData={{
+              freshnessH: 24,
+              coverage30d: 85
+            }}
             className="border-0 shadow-none"
           />
         </div>
@@ -241,8 +246,24 @@ export default function MetricDetailPage() {
             
             <div>
               <h4 className="font-medium text-text-900 mb-2">Interpretación</h4>
-              <div className="text-sm text-text-600 leading-relaxed">
-                {interpretation?.text || 'Interpretación no disponible'}
+              <div className="text-sm text-text-600 leading-relaxed space-y-2">
+                {humanCopy ? (
+                  <>
+                    <div>
+                      <strong>Resumen:</strong> {humanCopy.summary}
+                    </div>
+                    <div>
+                      <strong>Por qué importa:</strong> {humanCopy.why}
+                    </div>
+                    {humanCopy.watch && (
+                      <div>
+                        <strong>Qué mirar:</strong> {humanCopy.watch}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  'Interpretación no disponible'
+                )}
               </div>
             </div>
           </div>
@@ -272,9 +293,27 @@ export default function MetricDetailPage() {
                 </thead>
                 <tbody>
                   {chartData.slice(-10).reverse().map((point: any, index: number) => {
-                    const prevPoint = chartData[chartData.length - 2 - index];
-                    const change = prevPoint ? point.value - prevPoint.value : 0;
-                    const changePercent = prevPoint ? (change / prevPoint.value) * 100 : 0;
+                    // For the most recent point, show no change
+                    if (index === 0) {
+                      return (
+                        <tr key={point.ts} className="border-b border-border-200 last:border-b-0">
+                          <td className="py-2 text-text-600">
+                            {new Date(point.ts).toLocaleDateString('es-AR')}
+                          </td>
+                          <td className="py-2 text-right font-medium text-text-900">
+                            {formatValue(point.value, getUnit(definition.unit))}
+                          </td>
+                          <td className="py-2 text-right">
+                            <span className="text-sm text-muted">-</span>
+                          </td>
+                        </tr>
+                      );
+                    }
+                    
+                    // For other points, compare with the previous point in the reversed array
+                    const prevPoint = chartData.slice(-10).reverse()[index - 1];
+                    const change = point.value - prevPoint.value;
+                    const changePercent = prevPoint.value !== 0 ? (change / Math.abs(prevPoint.value)) * 100 : 0;
                     
                     return (
                       <tr key={point.ts} className="border-b border-border-200 last:border-b-0">
@@ -285,15 +324,11 @@ export default function MetricDetailPage() {
                           {formatValue(point.value, getUnit(definition.unit))}
                         </td>
                         <td className="py-2 text-right">
-                          {prevPoint ? (
-                            <span className={`text-sm ${
-                              change > 0 ? 'text-positive' : change < 0 ? 'text-negative' : 'text-muted'
-                            }`}>
-                              {change > 0 ? '+' : ''}{changePercent.toFixed(1)}%
-                            </span>
-                          ) : (
-                            <span className="text-sm text-muted">-</span>
-                          )}
+                          <span className={`text-sm ${
+                            change > 0 ? 'text-positive' : change < 0 ? 'text-negative' : 'text-muted'
+                          }`}>
+                            {change > 0 ? '+' : ''}{changePercent.toFixed(1)}%
+                          </span>
                         </td>
                       </tr>
                     );

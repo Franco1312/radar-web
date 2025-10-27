@@ -1,9 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getMetricTrend } from "@/features/metrics/selectors";
-import { getInterpretation } from "@/lib/analytics/interpretation";
+import { getHumanCopy, HumanCopy } from "@/lib/insights/humanCopy";
 import { formatValue } from "@/lib/format/number";
 import { TrendIcon } from "@/components/ui/TrendIcon";
 import { InfoTooltip } from "@/components/ui/InfoTooltip";
+import { RiskChip } from "@/components/ui/RiskChip";
+import { ConfidenceChip } from "@/components/ui/ConfidenceChip";
+import { DataNote } from "@/components/ui/DataNote";
+import { WatchSection } from "@/components/ui/WatchSection";
 import { LatestItem, MetricDefinition } from "@/types/metrics";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/date";
@@ -26,6 +30,8 @@ interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {
   def?: MetricDefinition;
   latest?: LatestItem;
   reference?: LatestItem;
+  humanCopy?: HumanCopy;
+  contextData?: { freshnessH?: number; coverage30d?: number; ma30?: number; p30?: number; p70?: number };
 }
 
 const categoryLabels = {
@@ -69,28 +75,28 @@ export const MetricCard = memo(function MetricCard({
   def,
   latest,
   reference,
+  humanCopy,
+  contextData,
   className
 }: MetricCardProps) {
   // Calculate trend if not provided
   const calculatedTrend = trend || (latest && reference ? getMetricTrend(latest, reference) : 'flat');
   
-  // Get interpretation if not provided
-  const calculatedInterpretation = interpretation || (value !== undefined ? 
-    getInterpretation(id, value, meta).text : 
-    "Sin datos disponibles"
+  // Get human copy interpretation
+  const humanInterpretation = humanCopy || (value !== undefined ? 
+    getHumanCopy(id, value, meta, contextData) : 
+    {
+      headline: "Sin datos disponibles",
+      summary: "No hay información suficiente para mostrar esta métrica.",
+      why: "Los datos son necesarios para un análisis preciso.",
+      risk: 'neutral' as const,
+      confidence: 'baja' as const,
+      icon: 'na' as const,
+      color: 'gray' as const
+    }
   );
 
-  // Get tone for styling
-  const interpretationTone = value !== undefined ? 
-    getInterpretation(id, value, meta).tone : 
-    'neutral';
-
-  const toneClasses = {
-    positive: "text-positive",
-    negative: "text-negative", 
-    warning: "text-warning",
-    neutral: "text-muted"
-  };
+  // No need for these classes anymore - using components
 
   if (loading) {
     return (
@@ -132,9 +138,9 @@ export const MetricCard = memo(function MetricCard({
     );
   }
 
-  // Get trend direction for visual styling
-  const getTrendStyle = (trend: 'up' | 'down' | 'flat') => {
-    switch (trend) {
+  // Get trend direction for visual styling based on human copy
+  const getTrendStyle = (icon: 'up' | 'down' | 'flat' | 'na') => {
+    switch (icon) {
       case 'up':
         return {
           bg: "bg-green-50/50",
@@ -149,6 +155,13 @@ export const MetricCard = memo(function MetricCard({
           icon: "↘",
           color: "text-red-600"
         };
+      case 'na':
+        return {
+          bg: "bg-gray-50/50",
+          border: "border-gray-100", 
+          icon: "?",
+          color: "text-gray-500"
+        };
       default:
         return {
           bg: "bg-gray-50/50",
@@ -159,7 +172,7 @@ export const MetricCard = memo(function MetricCard({
     }
   };
 
-  const trendStyle = getTrendStyle(calculatedTrend);
+  const trendStyle = getTrendStyle(humanInterpretation.icon);
 
   return (
     <Card 
@@ -210,6 +223,7 @@ export const MetricCard = memo(function MetricCard({
       
       <CardContent className="pt-0 relative z-10">
         <div className="space-y-4">
+          {/* Value display */}
           <div className="flex items-baseline gap-3">
             <span className="text-3xl font-bold text-gray-900">
               {value !== undefined ? formatValue(value, unit) : "N/A"}
@@ -221,13 +235,38 @@ export const MetricCard = memo(function MetricCard({
             )}
           </div>
           
-          <div className={cn(
-            "text-sm leading-relaxed p-4 rounded-lg bg-gradient-to-r from-gray-50/60 to-blue-50/40 border border-gray-100/50",
-            toneClasses[interpretationTone]
-          )}>
-            {calculatedInterpretation}
+          {/* Headline */}
+          <div className="text-lg font-semibold text-gray-900">
+            {humanInterpretation.headline}
           </div>
           
+          {/* Summary */}
+          <div className="text-sm text-gray-700 leading-relaxed">
+            {humanInterpretation.summary}
+          </div>
+          
+          {/* Why it matters */}
+          <div className="text-xs text-gray-600 italic">
+            <strong>Por qué importa:</strong> {humanInterpretation.why}
+          </div>
+          
+          {/* Watch section */}
+          {humanInterpretation.watch && (
+            <WatchSection watch={humanInterpretation.watch} />
+          )}
+          
+          {/* Risk and confidence chips */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <RiskChip risk={humanInterpretation.risk} />
+            <ConfidenceChip confidence={humanInterpretation.confidence} />
+          </div>
+          
+          {/* Data note */}
+          {humanInterpretation.dataNote && (
+            <DataNote note={humanInterpretation.dataNote} />
+          )}
+          
+          {/* Updated timestamp */}
           {updatedAt && (
             <div className="flex items-center gap-2 text-xs text-gray-400">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

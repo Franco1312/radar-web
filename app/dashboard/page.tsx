@@ -3,14 +3,15 @@
 import { DEFAULT_DASHBOARD_METRICS } from "@/config/app";
 import { useHealth } from "@/features/health/hooks";
 import { useMetricDefinitions, useLatest, useHistorical } from "@/features/metrics/hooks";
-import { MetricCard } from "@/components/cards/MetricCard";
+import { MetricCardWrapper } from "@/components/cards/MetricCardWrapper";
 import { Topbar } from "@/components/layout/Topbar";
 import { SiteFooter } from "@/components/layout/SiteFooter";
-import { WhatToWatchNow, generateWatchItems } from "@/components/panels/WhatToWatchNow";
+import { WhatToWatchNow } from "@/components/panels/WhatToWatchNow";
 import { DashboardSkeleton } from "@/components/ui/LoadingSkeleton";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { formatDate } from "@/lib/date";
-import { getInterpretation } from "@/lib/analytics/interpretation";
+import { useDailyReading } from "@/hooks/useDailyReading";
+import { useWatchItems } from "@/hooks/useWatchItems";
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -29,16 +30,9 @@ export default function DashboardPage() {
   const { data: definitions, isLoading: defsLoading, error: defsError } = useMetricDefinitions();
   const { data: latestData, isLoading: latestLoading, error: latestError } = useLatest([...DEFAULT_DASHBOARD_METRICS]);
 
-  // Historical data for charts
-  const { data: reservesData } = useHistorical("ratio.reserves_to_base", {
-    from: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-    to: new Date().toISOString(),
-  });
-
-  const { data: baseData } = useHistorical("delta.base_7d.pct", {
-    from: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-    to: new Date().toISOString(),
-  });
+  // Historical data for charts - without date filters for testing
+  const { data: reservesData, error: reservesError } = useHistorical("ratio.reserves_to_base");
+  const { data: baseData, error: baseError } = useHistorical("delta.base_7d.pct");
 
   // Create a map of definitions for quick lookup
   const defsMap = useMemo(() => {
@@ -53,30 +47,13 @@ export default function DashboardPage() {
     return new Date(Math.max(...timestamps));
   }, [latestData]);
 
-  // Generate watch items from metrics
-  const watchItems = useMemo(() => {
-    if (!latestData?.items || !definitions) return [];
-    
-    const metrics = latestData.items.map(item => {
-      const def = defsMap.get(item.metric_id);
-      if (!def) return null;
-      
-      const interpretation = getInterpretation(item.metric_id, typeof item.value === 'string' ? parseFloat(item.value) : item.value, item.metadata);
-      
-      return {
-        id: item.metric_id,
-        name: def.name,
-        value: typeof item.value === 'string' ? parseFloat(item.value) : item.value,
-        trend: interpretation.tone === 'positive' ? 'up' : interpretation.tone === 'negative' ? 'down' : 'flat' as 'up' | 'down' | 'flat',
-        interpretation: interpretation.text
-      };
-    }).filter((item): item is NonNullable<typeof item> => item !== null);
-
-    return generateWatchItems(metrics);
-  }, [latestData, definitions, defsMap]);
+  // Use custom hooks for cleaner logic
+  const dailyReading = useDailyReading({ latestData });
+  const watchItems = useWatchItems({ latestData });
 
   const isLoading = healthLoading || defsLoading || latestLoading;
   const hasError = healthError || defsError || latestError;
+  const hasChartError = reservesError || baseError;
 
   if (isLoading) {
     return (
@@ -144,11 +121,40 @@ export default function DashboardPage() {
             
             <div className="bg-white/70 backdrop-blur-sm p-6 rounded-lg border border-blue-100/50 shadow-sm">
               <div className="text-base text-gray-700 leading-relaxed">
-                {watchItems.length > 0 ? (
-                  <p className="flex items-start gap-3">
-                    <span className="text-xl text-blue-500">📊</span>
-                    <span className="font-medium">{watchItems[0].description}</span>
-                  </p>
+                {dailyReading ? (
+                  <div className="space-y-3">
+                    <p className="flex items-start gap-3">
+                      <span className="text-xl text-blue-500">📊</span>
+                      <span className="font-medium">
+                        Hoy, {dailyReading.headline.toLowerCase()}.
+                      </span>
+                    </p>
+                    <p className="text-sm text-gray-600 ml-8">
+                      <strong>Por qué importa:</strong> {dailyReading.why}
+                    </p>
+                    <div className="flex items-center gap-3 ml-8 text-xs">
+                      <span className={`px-2 py-1 rounded-full font-medium ${
+                        dailyReading.risk === 'positive' ? 'bg-green-100 text-green-700' :
+                        dailyReading.risk === 'warning' ? 'bg-amber-100 text-amber-700' :
+                        dailyReading.risk === 'negative' ? 'bg-red-100 text-red-700' :
+                        'bg-gray-100 text-gray-700'
+                      }`}>
+                        Riesgo: {dailyReading.risk === 'positive' ? 'Bajo' : 
+                                dailyReading.risk === 'warning' ? 'Medio' : 
+                                dailyReading.risk === 'negative' ? 'Alto' : 'Neutral'}
+                      </span>
+                      <span className={`px-2 py-1 rounded-full font-medium bg-gray-100 ${
+                        dailyReading.confidence === 'alta' ? 'text-green-600' :
+                        dailyReading.confidence === 'media' ? 'text-amber-600' :
+                        'text-red-600'
+                      }`}>
+                        Confianza: {dailyReading.confidence}
+                      </span>
+                      <span className="text-gray-500">
+                        Última act.: {lastUpdate ? Math.round((Date.now() - lastUpdate.getTime()) / (1000 * 60 * 60)) : '?'}h
+                      </span>
+                    </div>
+                  </div>
                 ) : (
                   <p className="flex items-start gap-3">
                     <span className="text-xl text-emerald-500">📈</span>
@@ -179,39 +185,17 @@ export default function DashboardPage() {
               
               if (!def) return null;
 
-              // Map category from metric ID
-              const getCategory = (id: string): 'deltas' | 'ratios' | 'fx' | 'monetary' | 'data_health' => {
-                if (id.startsWith('delta.')) return 'deltas';
-                if (id.startsWith('ratio.')) return 'ratios';
-                if (id.startsWith('fx.')) return 'fx';
-                if (id.startsWith('data.')) return 'data_health';
-                return 'monetary';
-              };
-
-              // Map unit from definition
-              const getUnit = (unit?: string): 'percent' | 'ARS' | 'USD' | 'ratio' | 'other' => {
-                if (!unit) return 'other';
-                if (unit.includes('%') || unit.includes('percent')) return 'percent';
-                if (unit.includes('ARS')) return 'ARS';
-                if (unit.includes('USD')) return 'USD';
-                if (unit.includes('ratio')) return 'ratio';
-                return 'other';
-              };
-
               return (
-                <Link key={metricId} href={`/metric/${metricId}`} className="block h-full">
-                  <MetricCard
-                    id={metricId}
-                    category={getCategory(metricId)}
-                    title={def.name}
-                    value={typeof latest?.value === 'string' ? parseFloat(latest.value) : latest?.value}
-                    unit={getUnit(def.unit)}
-                    updatedAt={latest?.ts}
-                    def={def}
-                    latest={latest}
-                    className="h-full min-h-[280px]"
-                  />
-                </Link>
+                <MetricCardWrapper
+                  key={metricId}
+                  metricId={metricId}
+                  def={def}
+                  latest={latest}
+                  contextData={{
+                    freshnessH: 24, // Default - could be calculated from updatedAt
+                    coverage30d: 85 // Default - could be calculated from historical data
+                  }}
+                />
               );
             })}
           </div>
@@ -222,62 +206,109 @@ export default function DashboardPage() {
           <h2 className="text-lg font-semibold text-text-900 mb-4">
             Tendencias Históricas
           </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Reserves to Base Ratio Chart */}
-            <div className="surface-card p-6">
-              <h3 className="text-md font-medium text-text-900 mb-2">
-                Ratio Reservas a Base Monetaria
+          {hasChartError ? (
+            <div className="surface-card p-6 text-center">
+              <div className="text-amber-600 mb-2">
+                <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Datos históricos no disponibles
               </h3>
-              <p className="text-sm text-text-600 mb-4">
-                Evolución del respaldo del peso en USD
+              <p className="text-sm text-gray-600">
+                Los gráficos históricos no se pueden cargar en este momento. 
+                Las métricas principales siguen funcionando correctamente.
               </p>
-              <TimeSeriesChart
-                data={reservesData?.points?.map(p => ({
-                  ts: p.ts,
-                  value: typeof p.value === 'string' ? parseFloat(p.value) : p.value
-                })) || []}
-                unit="ratio"
-                height={300}
-                color="var(--info)"
-                name="Ratio"
-              />
             </div>
-            
-            {/* Base Monetary Change Chart */}
-            <div className="surface-card p-6">
-              <h3 className="text-md font-medium text-text-900 mb-2">
-                Cambio Base Monetaria 7d
-              </h3>
-              <p className="text-sm text-text-600 mb-4">
-                Variación semanal de la base monetaria
-              </p>
-              <TimeSeriesChart
-                data={baseData?.points?.map(p => ({
-                  ts: p.ts,
-                  value: typeof p.value === 'string' ? parseFloat(p.value) : p.value
-                })) || []}
-                unit="percent"
-                height={300}
-                color="var(--warning)"
-                name="Cambio %"
-              />
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Reserves to Base Ratio Chart */}
+              <div className="surface-card p-6">
+                <h3 className="text-md font-medium text-text-900 mb-2">
+                  Ratio Reservas a Base Monetaria
+                </h3>
+                <p className="text-sm text-text-600 mb-4">
+                  Evolución del respaldo del peso en USD
+                </p>
+                <TimeSeriesChart
+                  data={reservesData?.points?.map(p => ({
+                    ts: p.ts,
+                    value: typeof p.value === 'string' ? parseFloat(p.value) : p.value
+                  })) || []}
+                  unit="ratio"
+                  height={300}
+                  color="var(--info)"
+                  name="Ratio"
+                />
+              </div>
+              
+              {/* Base Monetary Change Chart */}
+              <div className="surface-card p-6">
+                <h3 className="text-md font-medium text-text-900 mb-2">
+                  Cambio Base Monetaria 7d
+                </h3>
+                <p className="text-sm text-text-600 mb-4">
+                  Variación semanal de la base monetaria
+                </p>
+                <TimeSeriesChart
+                  data={baseData?.points?.map(p => ({
+                    ts: p.ts,
+                    value: typeof p.value === 'string' ? parseFloat(p.value) : p.value
+                  })) || []}
+                  unit="percent"
+                  height={300}
+                  color="var(--warning)"
+                  name="Cambio %"
+                />
+              </div>
             </div>
-          </div>
+          )}
         </section>
 
         {/* What to Watch Now */}
         {watchItems.length > 0 && (
           <section>
-            <WhatToWatchNow 
-              items={watchItems.map((item: any) => ({
-                ...item,
-                onClick: () => {
-                  if (item.metricId) {
-                    window.location.href = `/metric/${item.metricId}`;
-                  }
-                }
-              }))}
-            />
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-amber-100 rounded-lg">
+                <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM4.828 7l2.586 2.586a2 2 0 002.828 0L16 7l-6 6-6-6z" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Qué mirar ahora
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {watchItems.map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-white/70 backdrop-blur-sm p-4 rounded-lg border border-amber-200/50 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => {
+                    if (item.metricId) {
+                      window.location.href = `/metric/${item.metricId}`;
+                    }
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={`w-2 h-2 rounded-full mt-2 ${
+                      item.priority === 'high' ? 'bg-red-500' :
+                      item.priority === 'medium' ? 'bg-amber-500' :
+                      'bg-green-500'
+                    }`}></div>
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-700 leading-relaxed">
+                        {item.description}
+                      </p>
+                      <div className="mt-2 text-xs text-gray-500">
+                        Prioridad: {item.priority === 'high' ? 'Alta' : 
+                                   item.priority === 'medium' ? 'Media' : 'Baja'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </section>
         )}
 
