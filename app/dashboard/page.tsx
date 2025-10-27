@@ -96,7 +96,7 @@ export default function DashboardPage() {
           onRefresh={() => window.location.reload()}
         />
 
-        <main className="max-w-8xl mx-auto px-6 py-6 space-y-6 2xl:px-12">
+        <main className="max-w-7xl mx-auto px-6 py-6 space-y-6 2xl:max-w-8xl 2xl:px-12">
         {/* Reading of the day - Soft Enhanced */}
         <section 
           className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 p-8 rounded-xl border border-blue-200/50 shadow-md"
