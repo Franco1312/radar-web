@@ -178,10 +178,11 @@ function interpretBaseMonetaryChange(value: number, metricId: string): Interpret
  * Interpret reserves to base ratio
  */
 function interpretReservesRatio(value: number): Interpretation {
-  // Format value as decimal with 2-3 decimals
-  const formattedValue = value.toFixed(3);
+  // Normalize value if it's in centavos (very large)
+  const normalizedValue = value > 100 ? value / 100 : value;
+  const formattedValue = normalizedValue.toFixed(3);
   
-  if (value >= 0.80) {
+  if (normalizedValue >= 0.80) {
     return {
       title: "Respaldo del Peso en Reservas",
       explanation: `Respaldo sólido: las reservas cubren la mayor parte del dinero emitido. Por cada $1 en la economía, hay ${formattedValue} en reservas.`,
@@ -191,7 +192,7 @@ function interpretReservesRatio(value: number): Interpretation {
     };
   }
   
-  if (value >= 0.50) {
+  if (normalizedValue >= 0.50) {
     return {
       title: "Respaldo del Peso en Reservas",
       explanation: `Respaldo moderado: la estabilidad depende de las condiciones del mercado. Por cada $1 en la economía, hay ${formattedValue} en reservas.`,

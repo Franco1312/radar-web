@@ -43,13 +43,19 @@ export function formatMillionsUSD(value: number, decimals: number = 1): string {
 export function formatRatio(value: number, decimals: number = 3): string {
   if (isNaN(value)) return "N/A";
   
+  // Si el valor parece estar en centavos (muy grande), convertir a decimal
+  let normalizedValue = value;
+  if (value > 100) {
+    normalizedValue = value / 100;
+  }
+  
   // Para ratios de reservas a base, mostrar como decimal simple
-  if (value < 1) {
-    return `${value.toFixed(3)}`;
-  } else if (value < 10) {
-    return `${value.toFixed(2)}`;
+  if (normalizedValue < 1) {
+    return `${normalizedValue.toFixed(3)}`;
+  } else if (normalizedValue < 10) {
+    return `${normalizedValue.toFixed(2)}`;
   } else {
-    return `${value.toFixed(1)}`;
+    return `${normalizedValue.toFixed(1)}`;
   }
 }
 
