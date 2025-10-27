@@ -84,11 +84,11 @@ export default function DashboardPage() {
   }
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/10 relative">
+      <div className="min-h-screen bg-gradient-to-br from-slate-200 via-blue-200/50 to-indigo-200/40 relative">
         {/* Subtle background decorations */}
-        <div className="absolute top-20 right-10 w-64 h-64 bg-gradient-to-br from-blue-100/20 to-indigo-100/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-10 w-48 h-48 bg-gradient-to-tr from-emerald-100/20 to-blue-100/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-gradient-to-br from-purple-100/15 to-pink-100/15 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute top-20 right-10 w-64 h-64 bg-gradient-to-br from-blue-200/30 to-indigo-200/30 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-10 w-48 h-48 bg-gradient-to-tr from-emerald-200/30 to-blue-200/30 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-gradient-to-br from-purple-200/25 to-pink-200/25 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2"></div>
         
         <Topbar
           health={health}
