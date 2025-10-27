@@ -38,12 +38,13 @@ export function MetricCardWrapper({
   };
 
   // Map unit from definition
-  const getUnit = (unit?: string): 'percent' | 'ARS' | 'USD' | 'ratio' | 'other' => {
+  const getUnit = (unit?: string): 'percent' | 'ARS' | 'USD' | 'ratio' | 'volatility' | 'other' => {
     if (!unit) return 'other';
     if (unit.includes('%') || unit.includes('percent')) return 'percent';
     if (unit.includes('ARS')) return 'ARS';
     if (unit.includes('USD')) return 'USD';
     if (unit.includes('ratio')) return 'ratio';
+    if (unit.includes('vol') || unit.includes('volatility')) return 'volatility';
     return 'other';
   };
 

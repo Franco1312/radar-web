@@ -9,6 +9,23 @@ export function formatPercent(value: number, decimals: number = 1): string {
   return `${sign}${value.toFixed(decimals)}%`;
 }
 
+export function formatVolatility(value: number): string {
+  if (isNaN(value)) return "N/A";
+  
+  const percentage = value * 100;
+  let label = "";
+  
+  if (percentage < 1) {
+    label = "baja";
+  } else if (percentage < 3) {
+    label = "normal";
+  } else {
+    label = "alta";
+  }
+  
+  return `${percentage.toFixed(1)}% (${label})`;
+}
+
 export function formatMillionsARS(value: number, decimals: number = 1): string {
   if (isNaN(value)) return "N/A";
   
@@ -26,11 +43,14 @@ export function formatMillionsUSD(value: number, decimals: number = 1): string {
 export function formatRatio(value: number, decimals: number = 2): string {
   if (isNaN(value)) return "N/A";
   
-  if (value > 10) {
-    return value.toFixed(0);
+  // Para ratios muy grandes, mostrar en formato más legible
+  if (value > 1000) {
+    return `${(value / 1000).toFixed(1)}K×`;
+  } else if (value > 1) {
+    return `${value.toFixed(2)}×`;
+  } else {
+    return `${value.toFixed(2)}×`;
   }
-  
-  return value.toFixed(decimals);
 }
 
 export function formatCurrency(value: number, currency: 'ARS' | 'USD' = 'ARS'): string {
@@ -75,6 +95,8 @@ export function formatValue(value: number | null, unit?: string): string {
       return formatCurrency(value, 'USD');
     case 'ratio':
       return formatRatio(value);
+    case 'volatility':
+      return formatVolatility(value);
     default:
       return value.toLocaleString('es-AR', {
         minimumFractionDigits: 0,

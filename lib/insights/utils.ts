@@ -37,12 +37,12 @@ export function calcConfidence(ctx?: ContextData): ConfidenceLevel {
     return CONFIDENCE_LEVELS.ALTA;
   }
   
-  // Media si freshness ≤ 72h o cobertura_30d 60–80%
-  if (freshnessH <= THRESHOLDS.FRESHNESS_POOR || (coverage30d >= THRESHOLDS.COVERAGE_GOOD && coverage30d < THRESHOLDS.COVERAGE_EXCELLENT)) {
+  // Media si freshness ≤ 48h o cobertura_30d 60–80%
+  if (freshnessH <= THRESHOLDS.FRESHNESS_GOOD || (coverage30d >= THRESHOLDS.COVERAGE_GOOD && coverage30d < THRESHOLDS.COVERAGE_EXCELLENT)) {
     return CONFIDENCE_LEVELS.MEDIA;
   }
   
-  // Baja si freshness > 72h o cobertura_30d < 60%
+  // Baja si freshness > 48h o cobertura_30d < 60%
   return CONFIDENCE_LEVELS.BAJA;
 }
 

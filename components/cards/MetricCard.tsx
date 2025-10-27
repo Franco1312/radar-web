@@ -19,7 +19,7 @@ interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
   value?: number;
   rawValue?: number;
-  unit?: 'percent' | 'ARS' | 'USD' | 'ratio' | 'other';
+  unit?: 'percent' | 'ARS' | 'USD' | 'ratio' | 'volatility' | 'other';
   trend?: 'up' | 'down' | 'flat';
   interpretation?: string;
   updatedAt?: string;
@@ -223,16 +223,27 @@ export const MetricCard = memo(function MetricCard({
       
       <CardContent className="pt-0 relative z-10">
         <div className="space-y-4">
-          {/* Value display */}
-          <div className="flex items-baseline gap-3">
-            <span className="text-3xl font-bold text-gray-900">
-              {value !== undefined ? formatValue(value, unit) : "N/A"}
-            </span>
-            {unit !== 'other' && (
-              <span className="text-base font-medium text-gray-500">
-                {unit === 'percent' ? '%' : unit === 'ARS' ? 'ARS' : unit === 'USD' ? 'USD' : ''}
+          {/* Value display with trend indicator */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-baseline gap-3">
+              <span className="text-3xl font-bold text-gray-900">
+                {value !== undefined ? formatValue(value, unit) : "N/A"}
               </span>
-            )}
+              {unit !== 'other' && unit !== 'volatility' && (
+                <span className="text-base font-medium text-gray-500">
+                  {unit === 'percent' ? '%' : unit === 'ARS' ? 'ARS' : unit === 'USD' ? 'USD' : ''}
+                </span>
+              )}
+            </div>
+            {/* Trend indicator */}
+            <div className="flex items-center gap-2">
+              <span className={`text-2xl font-bold ${trendStyle.color}`}>
+                {trendStyle.icon}
+              </span>
+              <span className={`text-xs font-medium px-2 py-1 rounded-full ${trendStyle.bg} ${trendStyle.color}`}>
+                {humanInterpretation.icon === 'up' ? 'Sube' : humanInterpretation.icon === 'down' ? 'Baja' : 'Estable'}
+              </span>
+            </div>
           </div>
           
           {/* Headline */}
@@ -240,14 +251,16 @@ export const MetricCard = memo(function MetricCard({
             {humanInterpretation.headline}
           </div>
           
-          {/* Summary */}
-          <div className="text-sm text-gray-700 leading-relaxed">
-            {humanInterpretation.summary}
-          </div>
-          
-          {/* Why it matters */}
-          <div className="text-xs text-gray-600 italic">
-            <strong>Por qué importa:</strong> {humanInterpretation.why}
+          {/* Summary with why as tooltip */}
+          <div className="text-sm text-gray-700 leading-relaxed flex items-start gap-2">
+            <span>{humanInterpretation.summary}</span>
+            {humanInterpretation.why && (
+              <InfoTooltip 
+                title="¿Por qué importa?"
+                description={humanInterpretation.why}
+                className="flex-shrink-0"
+              />
+            )}
           </div>
           
           {/* Watch section */}
