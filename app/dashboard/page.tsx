@@ -196,10 +196,6 @@ export default function DashboardPage() {
                   metricId={metricId}
                   def={def}
                   latest={latest}
-                  contextData={{
-                    freshnessH: 24, // Default - could be calculated from updatedAt
-                    coverage30d: 85 // Default - could be calculated from historical data
-                  }}
                 />
               );
             })}

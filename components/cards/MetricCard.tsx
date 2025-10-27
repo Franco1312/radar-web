@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getMetricTrend } from "@/features/metrics/selectors";
-import { getHumanCopy, HumanCopy } from "@/lib/insights/humanCopy";
+import { getInterpretation, Interpretation } from "@/lib/analytics/interpretation";
 import { formatValue } from "@/lib/format/number";
 import { TrendIcon } from "@/components/ui/TrendIcon";
 import { InfoTooltip } from "@/components/ui/InfoTooltip";
@@ -30,8 +30,7 @@ interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {
   def?: MetricDefinition;
   latest?: LatestItem;
   reference?: LatestItem;
-  humanCopy?: HumanCopy;
-  contextData?: { freshnessH?: number; coverage30d?: number; ma30?: number; p30?: number; p70?: number };
+  interpretation?: Interpretation;
 }
 
 const categoryLabels = {
@@ -82,17 +81,15 @@ export const MetricCard = memo(function MetricCard({
   // Calculate trend if not provided
   const calculatedTrend = trend || (latest && reference ? getMetricTrend(latest, reference) : 'flat');
   
-  // Get human copy interpretation
-  const humanInterpretation = humanCopy || (value !== undefined ? 
-    getHumanCopy(id, value, meta, contextData) : 
+  // Get interpretation
+  const metricInterpretation = interpretation || (value !== undefined ? 
+    getInterpretation(id, value, meta) : 
     {
-      headline: "Sin datos disponibles",
-      summary: "No hay información suficiente para mostrar esta métrica.",
-      why: "Los datos son necesarios para un análisis preciso.",
-      risk: 'neutral' as const,
-      confidence: 'baja' as const,
-      icon: 'na' as const,
-      color: 'gray' as const
+      title: "Sin datos disponibles",
+      explanation: "No hay información suficiente para mostrar esta métrica.",
+      why_it_matters: "Los datos son necesarios para un análisis preciso.",
+      what_to_watch: "Esperar a que lleguen nuevos datos para poder evaluar la situación.",
+      tone: "neutral" as const
     }
   );
 
@@ -138,41 +135,41 @@ export const MetricCard = memo(function MetricCard({
     );
   }
 
-  // Get trend direction for visual styling based on human copy
-  const getTrendStyle = (icon: 'up' | 'down' | 'flat' | 'na') => {
-    switch (icon) {
-      case 'up':
+  // Get trend direction for visual styling based on interpretation tone
+  const getTrendStyle = (tone: 'positive' | 'neutral' | 'warning' | 'negative') => {
+    switch (tone) {
+      case 'positive':
         return {
           bg: "bg-green-50/50",
           border: "border-green-100",
-          icon: "↗",
+          icon: "📈",
           color: "text-green-600"
         };
-      case 'down':
+      case 'negative':
         return {
           bg: "bg-red-50/50", 
           border: "border-red-100",
-          icon: "↘",
+          icon: "📉",
           color: "text-red-600"
         };
-      case 'na':
+      case 'warning':
         return {
-          bg: "bg-gray-50/50",
-          border: "border-gray-100", 
-          icon: "?",
-          color: "text-gray-500"
+          bg: "bg-amber-50/50",
+          border: "border-amber-100", 
+          icon: "⚠️",
+          color: "text-amber-600"
         };
-      default:
+      default: // neutral
         return {
-          bg: "bg-gray-50/50",
-          border: "border-gray-100", 
-          icon: "→",
-          color: "text-gray-500"
+          bg: "bg-blue-50/50",
+          border: "border-blue-100", 
+          icon: "➡️",
+          color: "text-blue-600"
         };
     }
   };
 
-  const trendStyle = getTrendStyle(humanInterpretation.icon);
+  const trendStyle = getTrendStyle(metricInterpretation.tone);
 
   return (
     <Card 
@@ -207,14 +204,6 @@ export const MetricCard = memo(function MetricCard({
               />
             )}
           </div>
-          <div className="flex items-center gap-1">
-            <span className="text-lg font-medium text-gray-400">{trendStyle.icon}</span>
-            <TrendIcon 
-              direction={calculatedTrend} 
-              size="sm"
-              className={trendStyle.color}
-            />
-          </div>
         </div>
         <CardTitle className="text-lg font-semibold text-gray-900 mt-2">
           {title}
@@ -241,43 +230,30 @@ export const MetricCard = memo(function MetricCard({
                 {trendStyle.icon}
               </span>
               <span className={`text-xs font-medium px-2 py-1 rounded-full ${trendStyle.bg} ${trendStyle.color}`}>
-                {humanInterpretation.icon === 'up' ? 'Sube' : humanInterpretation.icon === 'down' ? 'Baja' : 'Estable'}
+                {metricInterpretation.tone === 'positive' ? 'Mejora' : metricInterpretation.tone === 'negative' ? 'Empeora' : metricInterpretation.tone === 'warning' ? 'Atención' : 'Estable'}
               </span>
             </div>
           </div>
           
-          {/* Headline */}
+          {/* Title */}
           <div className="text-lg font-semibold text-gray-900">
-            {humanInterpretation.headline}
+            {metricInterpretation.title}
           </div>
           
-          {/* Summary with why as tooltip */}
-          <div className="text-sm text-gray-700 leading-relaxed flex items-start gap-2">
-            <span>{humanInterpretation.summary}</span>
-            {humanInterpretation.why && (
-              <InfoTooltip 
-                title="¿Por qué importa?"
-                description={humanInterpretation.why}
-                className="flex-shrink-0"
-              />
-            )}
+          {/* Explanation */}
+          <div className="text-sm text-gray-700 leading-relaxed">
+            {metricInterpretation.explanation}
           </div>
           
-          {/* Watch section */}
-          {humanInterpretation.watch && (
-            <WatchSection watch={humanInterpretation.watch} />
-          )}
-          
-          {/* Risk and confidence chips */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <RiskChip risk={humanInterpretation.risk} />
-            <ConfidenceChip confidence={humanInterpretation.confidence} />
+          {/* Why it matters with tooltip */}
+          <div className="text-xs text-gray-600 italic flex items-start gap-2">
+            <span><strong>Por qué importa:</strong> {metricInterpretation.why_it_matters}</span>
           </div>
           
-          {/* Data note */}
-          {humanInterpretation.dataNote && (
-            <DataNote note={humanInterpretation.dataNote} />
-          )}
+          {/* What to watch */}
+          <div className="text-xs text-gray-600 italic">
+            <strong>Qué mirar:</strong> {metricInterpretation.what_to_watch}
+          </div>
           
           {/* Updated timestamp */}
           {updatedAt && (

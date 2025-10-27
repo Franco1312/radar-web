@@ -1,5 +1,5 @@
 import { MetricCard } from './MetricCard';
-import { useMetricHumanCopy } from '@/hooks/useMetricHumanCopy';
+import { getInterpretation } from '@/lib/analytics/interpretation';
 import { LatestItem, MetricDefinition } from '@/types/metrics';
 import Link from 'next/link';
 
@@ -7,26 +7,18 @@ interface MetricCardWrapperProps {
   metricId: string;
   def: MetricDefinition;
   latest?: LatestItem;
-  contextData?: {
-    freshnessH?: number;
-    coverage30d?: number;
-    ma30?: number;
-    p30?: number;
-    p70?: number;
-  };
 }
 
 export function MetricCardWrapper({ 
   metricId, 
   def, 
-  latest, 
-  contextData = { freshnessH: 24, coverage30d: 85 } 
+  latest
 }: MetricCardWrapperProps) {
-  const humanCopy = useMetricHumanCopy({
-    metricId,
-    latest,
-    contextData
-  });
+  const interpretation = latest ? getInterpretation(
+    metricId, 
+    typeof latest.value === 'string' ? parseFloat(latest.value) : latest.value, 
+    latest.metadata
+  ) : undefined;
 
   // Map category from metric ID
   const getCategory = (id: string): 'deltas' | 'ratios' | 'fx' | 'monetary' | 'data_health' => {
@@ -59,8 +51,7 @@ export function MetricCardWrapper({
         updatedAt={latest?.ts}
         def={def}
         latest={latest}
-        humanCopy={humanCopy}
-        contextData={contextData}
+        interpretation={interpretation}
         className="h-full min-h-[320px]"
       />
     </Link>
