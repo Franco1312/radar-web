@@ -96,7 +96,7 @@ export default function DashboardPage() {
           onRefresh={() => window.location.reload()}
         />
 
-        <main className="max-w-7xl mx-auto p-6 space-y-8">
+        <main className="max-w-8xl mx-auto px-6 py-6 space-y-6">
         {/* Reading of the day - Soft Enhanced */}
         <section 
           className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 p-8 rounded-xl border border-blue-200/50 shadow-md"
@@ -183,7 +183,7 @@ export default function DashboardPage() {
               Métricas Principales
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
             {DEFAULT_DASHBOARD_METRICS.map((metricId) => {
               const def = defsMap.get(metricId);
               const latest = latestData?.items?.find(item => item.metric_id === metricId);
