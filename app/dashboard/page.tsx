@@ -227,7 +227,7 @@ export default function DashboardPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               {/* Reserves to Base Ratio Chart */}
               <div className="surface-card p-6">
                 <h3 className="text-md font-medium text-text-900 mb-2">
