@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>EcoSense - Entendé la economía de forma clara y sin estrés</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.2.0/dist/chartjs-chart-financial.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'warm-white': '#FAFAF6',
+                        'soft-black': '#2B2B2B',
+                        'warm-yellow': '#F4D35E',
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-[#FAFAF6] text-[#2B2B2B] font-inter">
+    <!-- Header -->
+    <header class="py-20 md:py-28">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center gap-3">
+                    <svg class="h-8 w-8" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                        <!-- open arc (not a full circle) -->
+                        <path d="M10 30a14 14 0 1 1 4 -19" stroke="#2B2B2B" stroke-width="2.4" stroke-linecap="round"/>
+                        <!-- yellow signal dot sitting on the outer top-right edge -->
+                        <circle cx="28" cy="12" r="4" fill="#F4D35E"/>
+                    </svg>
+                    <span class="text-xl font-semibold tracking-tight text-[#2B2B2B]">EcoSense</span>
+                </div>
+                <!-- CTA Button -->
+                <a href="#" class="text-sm font-medium underline underline-offset-4 hover:opacity-80 text-[#2B2B2B]">
+                    Me interesa
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="py-20 md:py-28">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-[#2B2B2B]">
+                        Entendé la economía de forma clara y sin estrés.
+                    </h1>
+                    <p class="text-lg md:text-xl text-[#2B2B2B]/70 mb-12 max-w-2xl">
+                        Interpretamos lo que está pasando, qué significa y por qué importa — para ayudarte a tomar mejores decisiones sin perder tiempo.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button class="bg-[#F4D35E] text-[#2B2B2B] px-8 py-4 rounded-xl font-semibold text-lg hover:brightness-95 transition-all">
+                            Unirme a la lista temprana
+                        </button>
+                        <a href="#" class="text-[#2B2B2B] px-8 py-4 rounded-xl font-semibold text-lg underline underline-offset-4 hover:opacity-80 transition-all text-center sm:text-left">
+                            Seguir novedades
+                        </a>
+                    </div>
+                </div>
+                <!-- Placeholder visual -->
+                <div class="hidden lg:block">
+                    <div class="border border-black/5 rounded-xl p-8 h-96 flex items-center justify-center bg-white">
+                        <div class="text-center">
+                            <p class="text-[#2B2B2B]/60 font-medium">Visualización de datos económicos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Indicadores Clave Section -->
+    <section class="py-20 md:py-28">
+        <div class="max-w-6xl mx-auto px-6">
+            <h3 class="text-2xl font-bold mb-12 text-[#2B2B2B] text-center">Indicadores clave</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                <!-- Dólar oficial -->
+                <div class="rounded-xl border-2 border-[#F4D35E]/20 bg-white p-5 text-center hover:border-[#F4D35E]/40 hover:shadow-sm transition-all duration-300 cursor-pointer">
+                    <div class="text-sm text-[#2B2B2B]/60 mb-2 font-medium">Dólar oficial</div>
+                    <div class="text-2xl font-bold text-[#2B2B2B] mb-2">$850,00</div>
+                    <div class="text-xs px-2 py-1 rounded-full border border-green-200 text-green-700 bg-green-50 font-medium inline-block">
+                        = estable
+                    </div>
+                </div>
+                
+                <!-- Dólar MEP -->
+                <div class="rounded-xl border-2 border-[#F4D35E]/20 bg-white p-5 text-center hover:border-[#F4D35E]/40 hover:shadow-sm transition-all duration-300 cursor-pointer">
+                    <div class="text-sm text-[#2B2B2B]/60 mb-2 font-medium">Dólar MEP</div>
+                    <div class="text-2xl font-bold text-[#2B2B2B] mb-2">$1.250,00</div>
+                    <div class="text-xs px-2 py-1 rounded-full border border-red-200 text-red-700 bg-red-50 font-medium inline-block">
+                        +2,1%
+                    </div>
+                </div>
+                
+                <!-- Reservas BCRA -->
+                <div class="rounded-xl border-2 border-[#F4D35E]/20 bg-white p-5 text-center hover:border-[#F4D35E]/40 hover:shadow-sm transition-all duration-300 cursor-pointer">
+                    <div class="text-sm text-[#2B2B2B]/60 mb-2 font-medium">Reservas BCRA</div>
+                    <div class="text-2xl font-bold text-[#2B2B2B] mb-2">$23,2B</div>
+                    <div class="text-xs px-2 py-1 rounded-full border border-red-200 text-red-700 bg-red-50 font-medium inline-block">
+                        -1,2%
+                    </div>
+                </div>
+                
+                <!-- Inflación semanal -->
+                <div class="rounded-xl border-2 border-[#F4D35E]/20 bg-white p-5 text-center hover:border-[#F4D35E]/40 hover:shadow-sm transition-all duration-300 cursor-pointer">
+                    <div class="text-sm text-[#2B2B2B]/60 mb-2 font-medium">Inflación semanal</div>
+                    <div class="text-2xl font-bold text-[#2B2B2B] mb-2">4,2%</div>
+                    <div class="text-xs px-2 py-1 rounded-full border border-green-200 text-green-700 bg-green-50 font-medium inline-block">
+                        = estable
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Cards Section -->
+    <section class="py-20 md:py-28">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-[#2B2B2B]">Beneficios claros y simples.</h2>
+            <div class="grid md:grid-cols-3 gap-6 md:gap-8">
+                <!-- Card 1 -->
+                <div class="rounded-xl border border-black/5 bg-white p-6 text-center">
+                    <div class="w-12 h-12 bg-[#F4D35E] rounded-full mb-4 mx-auto flex items-center justify-center">
+                        <svg class="w-6 h-6 text-[#2B2B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-[#2B2B2B] mb-3">Señales que importan</h3>
+                    <p class="text-[#2B2B2B]/70">Te avisamos solo cuando algo realmente cambia.</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="rounded-xl border border-black/5 bg-white p-6 text-center">
+                    <div class="w-12 h-12 bg-[#F4D35E] rounded-full mb-4 mx-auto flex items-center justify-center">
+                        <svg class="w-6 h-6 text-[#2B2B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-[#2B2B2B] mb-3">Ahorro de tiempo</h3>
+                    <p class="text-[#2B2B2B]/70">Eliminamos el ruido para que veas lo esencial.</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="rounded-xl border border-black/5 bg-white p-6 text-center">
+                    <div class="w-12 h-12 bg-[#F4D35E] rounded-full mb-4 mx-auto flex items-center justify-center">
+                        <svg class="w-6 h-6 text-[#2B2B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-[#2B2B2B] mb-3">Decisiones con sentido</h3>
+                    <p class="text-[#2B2B2B]/70">Entendé el contexto antes de actuar.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Signal Section -->
+    <section class="py-20 md:py-28">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-[#2B2B2B]">Señal del mercado</h2>
+            <div class="w-full max-w-5xl mx-auto bg-[#1a1a1a] rounded-xl border border-black/10 p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-3 h-3 bg-[#F4D35E] rounded-full"></div>
+                        <span class="text-white font-semibold text-lg">USD/ARS</span>
+                        <span class="text-[#F4D35E] font-bold text-lg">$425.00</span>
+                        <span class="text-green-400 text-sm">+2.1%</span>
+                    </div>
+                    <!-- Desktop: Botones horizontales -->
+                    <div class="hidden sm:flex gap-2">
+                        <button class="px-3 py-1 bg-[#2B2B2B] text-white text-xs rounded hover:bg-[#3a3a3a]">1D</button>
+                        <button class="px-3 py-1 bg-[#F4D35E] text-[#1a1a1a] text-xs rounded font-semibold">1M</button>
+                        <button class="px-3 py-1 bg-[#2B2B2B] text-white text-xs rounded hover:bg-[#3a3a3a]">3M</button>
+                        <button class="px-3 py-1 bg-[#2B2B2B] text-white text-xs rounded hover:bg-[#3a3a3a]">1Y</button>
+                    </div>
+                    
+                    <!-- Mobile: Menú desplegable -->
+                    <div class="sm:hidden relative">
+                        <button id="timeframeDropdown" class="px-3 py-1 bg-[#2B2B2B] text-white text-xs rounded hover:bg-[#3a3a3a] flex items-center gap-1">
+                            <span>1M</span>
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div id="timeframeMenu" class="hidden absolute right-0 top-full mt-1 bg-[#2d2d2d] rounded-lg shadow-lg border border-[#3a3a3a] min-w-[80px] z-10">
+                            <button class="w-full px-3 py-2 text-white text-xs hover:bg-[#3a3a3a] text-left rounded-t-lg">1D</button>
+                            <button class="w-full px-3 py-2 bg-[#F4D35E] text-[#1a1a1a] text-xs font-semibold text-left">1M</button>
+                            <button class="w-full px-3 py-2 text-white text-xs hover:bg-[#3a3a3a] text-left">3M</button>
+                            <button class="w-full px-3 py-2 text-white text-xs hover:bg-[#3a3a3a] text-left rounded-b-lg">1Y</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative" style="height: 300px;">
+                    <div id="marketChart" class="w-full h-full"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="py-20 md:py-28">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 text-[#2B2B2B]">Sé el primero en saberlo.</h2>
+            <p class="text-xl lg:text-2xl text-[#2B2B2B]/70 mb-12 max-w-3xl mx-auto">
+                Unite a la lista temprana y recibí interpretación clara cuando algo importante suceda.
+            </p>
+            <form class="flex flex-col lg:flex-row gap-4 max-w-2xl mx-auto">
+                <input type="email" 
+                       placeholder="Tu correo electrónico" 
+                       class="flex-1 px-6 py-4 text-lg rounded-xl border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#F4D35E] focus:border-transparent bg-white">
+                <button type="submit" 
+                        class="bg-[#F4D35E] text-[#2B2B2B] px-8 py-4 rounded-xl font-semibold text-lg hover:brightness-95 transition-all">
+                    Unirme ahora
+                </button>
+            </form>
+            <a href="#" class="mt-6 text-lg text-[#2B2B2B]/70 underline underline-offset-4 hover:opacity-80 transition-all inline-block">
+                Solo quiero estar atento
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 border-t border-black/5">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p class="text-sm text-[#2B2B2B]/60">
+                EcoSense · Política de Privacidad · Términos de Uso
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Crear el gráfico cuando la página cargue
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartContainer = document.getElementById('marketChart');
+            
+            // Generar datos de velas realistas
+            const generateCandlestickData = () => {
+                const data = [];
+                let basePrice = 350;
+                
+                for (let i = 0; i < 30; i++) {
+                    const volatility = 0.015;
+                    const trend = 0.002;
+                    const random = (Math.random() - 0.5) * 2;
+                    
+                    const open = basePrice;
+                    const change = basePrice * (trend + random * volatility);
+                    const close = open + change;
+                    const high = Math.max(open, close) + Math.random() * 8;
+                    const low = Math.min(open, close) - Math.random() * 8;
+                    
+                    data.push({
+                        open: Math.round(open * 100) / 100,
+                        high: Math.round(high * 100) / 100,
+                        low: Math.round(low * 100) / 100,
+                        close: Math.round(close * 100) / 100
+                    });
+                    
+                    basePrice = close;
+                }
+                
+                return data;
+            };
+
+            const candlestickData = generateCandlestickData();
+            const maxPrice = Math.max(...candlestickData.map(d => d.high));
+            const minPrice = Math.min(...candlestickData.map(d => d.low));
+            const priceRange = maxPrice - minPrice;
+            const chartHeight = 250;
+            const chartWidth = 800;
+            const candleWidth = 20;
+            const candleSpacing = 5;
+            const totalCandleWidth = candleWidth + candleSpacing;
+            const startX = 50;
+            const startY = 20;
+
+            // Crear SVG del gráfico
+            const svg = `
+                <svg viewBox="0 0 900 300" class="w-full h-full">
+                    <!-- Grid -->
+                    <defs>
+                        <pattern id="grid" width="40" height="30" patternUnits="userSpaceOnUse">
+                            <path d="M 40 0 L 0 0 0 30" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#grid)"/>
+                    
+                    <!-- Candlesticks -->
+                    <g>
+                        ${candlestickData.map((candle, index) => {
+                            const x = startX + (index * totalCandleWidth);
+                            const isGreen = candle.close >= candle.open;
+                            const color = isGreen ? '#00D4AA' : '#FF6B6B';
+                            const fillColor = isGreen ? '#00D4AA' : '#FF6B6B';
+                            
+                            // Calcular posiciones Y
+                            const highY = startY + ((maxPrice - candle.high) / priceRange) * chartHeight;
+                            const lowY = startY + ((maxPrice - candle.low) / priceRange) * chartHeight;
+                            const openY = startY + ((maxPrice - candle.open) / priceRange) * chartHeight;
+                            const closeY = startY + ((maxPrice - candle.close) / priceRange) * chartHeight;
+                            
+                            // Línea vertical (high-low)
+                            const lineY = Math.min(highY, lowY);
+                            const lineHeight = Math.abs(highY - lowY);
+                            
+                            // Rectángulo (open-close)
+                            const rectY = Math.min(openY, closeY);
+                            const rectHeight = Math.abs(openY - closeY);
+                            
+                            return `
+                                <!-- Línea vertical -->
+                                <line x1="${x + candleWidth/2}" y1="${highY}" x2="${x + candleWidth/2}" y2="${lowY}" stroke="${color}" stroke-width="1"/>
+                                
+                                <!-- Rectángulo de la vela -->
+                                <rect x="${x}" y="${rectY}" width="${candleWidth}" height="${rectHeight}" fill="${fillColor}" stroke="${color}" stroke-width="1"/>
+                            `;
+                        }).join('')}
+                    </g>
+                    
+                    <!-- Labels del eje X -->
+                    <text x="50" y="290" text-anchor="middle" fill="#8b8b8b" font-family="Inter" font-size="10" font-weight="500">01/01</text>
+                    <text x="200" y="290" text-anchor="middle" fill="#8b8b8b" font-family="Inter" font-size="10" font-weight="500">08/01</text>
+                    <text x="350" y="290" text-anchor="middle" fill="#8b8b8b" font-family="Inter" font-size="10" font-weight="500">15/01</text>
+                    <text x="500" y="290" text-anchor="middle" fill="#8b8b8b" font-family="Inter" font-size="10" font-weight="500">22/01</text>
+                    <text x="650" y="290" text-anchor="middle" fill="#8b8b8b" font-family="Inter" font-size="10" font-weight="500">29/01</text>
+                    
+                    <!-- Labels del eje Y -->
+                    <text x="20" y="30" text-anchor="end" fill="#8b8b8b" font-family="Inter" font-size="10" font-weight="500">$${Math.round(maxPrice)}</text>
+                    <text x="20" y="80" text-anchor="end" fill="#8b8b8b" font-family="Inter" font-size="10" font-weight="500">$${Math.round(maxPrice - priceRange * 0.25)}</text>
+                    <text x="20" y="130" text-anchor="end" fill="#8b8b8b" font-family="Inter" font-size="10" font-weight="500">$${Math.round(maxPrice - priceRange * 0.5)}</text>
+                    <text x="20" y="180" text-anchor="end" fill="#8b8b8b" font-family="Inter" font-size="10" font-weight="500">$${Math.round(maxPrice - priceRange * 0.75)}</text>
+                    <text x="20" y="230" text-anchor="end" fill="#8b8b8b" font-family="Inter" font-size="10" font-weight="500">$${Math.round(minPrice)}</text>
+                </svg>
+            `;
+            
+            chartContainer.innerHTML = svg;
+            
+            // Funcionalidad del menú desplegable en móvil
+            const dropdown = document.getElementById('timeframeDropdown');
+            const menu = document.getElementById('timeframeMenu');
+            const menuButtons = menu.querySelectorAll('button');
+            
+            if (dropdown && menu) {
+                dropdown.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    menu.classList.toggle('hidden');
+                });
+                
+                // Cerrar menú al hacer clic fuera
+                document.addEventListener('click', () => {
+                    menu.classList.add('hidden');
+                });
+                
+                // Cambiar timeframe seleccionado
+                menuButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const selectedTimeframe = button.textContent.trim();
+                        dropdown.querySelector('span').textContent = selectedTimeframe;
+                        menu.classList.add('hidden');
+                        
+                        // Aquí podrías agregar lógica para cambiar los datos del gráfico
+                        console.log('Timeframe seleccionado:', selectedTimeframe);
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

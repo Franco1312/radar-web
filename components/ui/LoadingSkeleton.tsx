@@ -15,6 +15,17 @@ export function LoadingSkeleton({ className }: LoadingSkeletonProps) {
   );
 }
 
+export function DarkLoadingSkeleton({ className }: LoadingSkeletonProps) {
+  return (
+    <div
+      className={cn(
+        "animate-pulse bg-white/20 rounded",
+        className
+      )}
+    />
+  );
+}
+
 export function MetricCardSkeleton() {
   return (
     <div className="p-6 border rounded-lg bg-white">
@@ -65,6 +76,74 @@ export function DashboardSkeleton() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartSkeleton />
         <ChartSkeleton />
+      </div>
+    </div>
+  );
+}
+
+export function DarkMetricCardSkeleton() {
+  return (
+    <div className="p-6 border border-[#F4D35E]/20 rounded-xl bg-white/10 backdrop-blur-sm">
+      <div className="flex items-center justify-between mb-4">
+        <DarkLoadingSkeleton className="h-4 w-32" />
+        <DarkLoadingSkeleton className="h-4 w-4 rounded-full" />
+      </div>
+      <div className="space-y-2">
+        <DarkLoadingSkeleton className="h-8 w-24" />
+        <DarkLoadingSkeleton className="h-3 w-16" />
+        <DarkLoadingSkeleton className="h-3 w-full" />
+      </div>
+    </div>
+  );
+}
+
+export function DarkChartSkeleton({ height = 300 }: { height?: number }) {
+  return (
+    <div className="p-6 border border-[#F4D35E]/20 rounded-xl bg-white/10 backdrop-blur-sm">
+      <div className="mb-4">
+        <DarkLoadingSkeleton className="h-6 w-48 mb-2" />
+        <DarkLoadingSkeleton className="h-4 w-32" />
+      </div>
+      <div className="w-full" style={{ height }}>
+        <DarkLoadingSkeleton className="w-full h-full" />
+      </div>
+    </div>
+  );
+}
+
+export function DarkDashboardSkeleton() {
+  return (
+    <div className="space-y-8">
+      {/* Reading of the day skeleton */}
+      <div className="bg-white/10 backdrop-blur-sm p-8 rounded-xl border border-[#F4D35E]/30">
+        <div className="flex items-center gap-3 mb-6">
+          <DarkLoadingSkeleton className="w-12 h-12 rounded-full" />
+          <div className="space-y-2">
+            <DarkLoadingSkeleton className="h-6 w-48" />
+            <DarkLoadingSkeleton className="h-4 w-64" />
+          </div>
+        </div>
+        <div className="space-y-4">
+          <DarkLoadingSkeleton className="h-4 w-full" />
+          <DarkLoadingSkeleton className="h-4 w-3/4" />
+          <DarkLoadingSkeleton className="h-4 w-1/2" />
+        </div>
+      </div>
+
+      {/* Metrics Grid */}
+      <div>
+        <DarkLoadingSkeleton className="h-8 w-48 mx-auto mb-12" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <DarkMetricCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+      
+      {/* Chart skeleton */}
+      <div>
+        <DarkLoadingSkeleton className="h-10 w-64 mx-auto mb-12" />
+        <DarkChartSkeleton height={300} />
       </div>
     </div>
   );

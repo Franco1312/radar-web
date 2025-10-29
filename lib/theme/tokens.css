@@ -4,6 +4,11 @@
  */
 
 :root {
+  /* === ECOsense COLORES PRINCIPALES === */
+  --warm-white: #FAFAF6;      /* EcoSense background */
+  --soft-black: #2B2B2B;      /* EcoSense text */
+  --warm-yellow: #F4D35E;     /* EcoSense accent */
+  
   /* === COLORES SEMÁNTICOS === */
   --positive: #16a34a;        /* green-600 */
   --positive-light: #dcfce7;  /* green-100 */
@@ -22,18 +27,18 @@
   --info-dark: #2563eb;       /* blue-700 */
   
   /* === TEXTOS === */
-  --text-900: #111827;        /* gray-900 */
-  --text-800: #1f2937;        /* gray-800 */
-  --text-700: #374151;        /* gray-700 */
-  --text-600: #4b5563;        /* gray-600 */
-  --text-500: #6b7280;        /* gray-500 */
-  --text-400: #9ca3af;        /* gray-400 */
-  --text-300: #d1d5db;        /* gray-300 */
+  --text-900: #2B2B2B;        /* EcoSense soft-black */
+  --text-800: #2B2B2B;        /* EcoSense soft-black */
+  --text-700: #2B2B2B;        /* EcoSense soft-black with opacity */
+  --text-600: #2B2B2B;        /* EcoSense soft-black with opacity */
+  --text-500: #2B2B2B;        /* EcoSense soft-black with opacity */
+  --text-400: #2B2B2B;        /* EcoSense soft-black with opacity */
+  --text-300: #2B2B2B;        /* EcoSense soft-black with opacity */
   
   /* === SUPERFICIES === */
   --surface: #ffffff;         /* white */
-  --surface-secondary: #f8fafc; /* slate-50 - más azulado */
-  --surface-tertiary: #f1f5f9;  /* slate-100 - más azulado */
+  --surface-secondary: #FAFAF6; /* EcoSense warm-white */
+  --surface-tertiary: #f8f8f4;  /* slightly darker warm-white */
   
   /* === SUPERFICIES CON COLOR SUAVE === */
   --surface-card: #fefefe;     /* casi blanco */

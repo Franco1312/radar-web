@@ -21,7 +21,6 @@ interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {
   rawValue?: number;
   unit?: 'percent' | 'ARS' | 'USD' | 'ratio' | 'volatility' | 'other';
   trend?: 'up' | 'down' | 'flat';
-  interpretation?: string;
   updatedAt?: string;
   loading?: boolean;
   error?: string;
@@ -65,7 +64,6 @@ export const MetricCard = memo(function MetricCard({
   rawValue,
   unit = 'other',
   trend,
-  interpretation,
   updatedAt,
   loading = false,
   error,
@@ -74,15 +72,14 @@ export const MetricCard = memo(function MetricCard({
   def,
   latest,
   reference,
-  humanCopy,
-  contextData,
+  interpretation,
   className
 }: MetricCardProps) {
   // Calculate trend if not provided
   const calculatedTrend = trend || (latest && reference ? getMetricTrend(latest, reference) : 'flat');
   
   // Get interpretation
-  const metricInterpretation = interpretation || (value !== undefined ? 
+  const metricInterpretation: Interpretation = interpretation || (value !== undefined ? 
     getInterpretation(id, value, meta) : 
     {
       title: "Sin datos disponibles",
@@ -172,11 +169,9 @@ export const MetricCard = memo(function MetricCard({
   const trendStyle = getTrendStyle(metricInterpretation.tone);
 
   return (
-    <Card 
+    <div 
       className={cn(
-        "relative overflow-hidden shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group bg-white/80 backdrop-blur-sm",
-        trendStyle.border,
-        onClick && "hover:scale-[1.02]",
+        "rounded-xl border-2 border-[#F4D35E]/30 bg-white/10 backdrop-blur-sm p-5 text-center hover:border-[#F4D35E]/50 hover:bg-white/20 hover:shadow-lg transition-all duration-300 cursor-pointer group",
         className
       )}
       onClick={onClick}
@@ -184,88 +179,53 @@ export const MetricCard = memo(function MetricCard({
       tabIndex={onClick ? 0 : undefined}
       aria-label={`Ver detalles de ${title}`}
     >
-      {/* Subtle background decoration with color */}
-      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-100/20 to-indigo-100/20 rounded-full -translate-y-10 translate-x-10"></div>
-      <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-emerald-100/20 to-blue-100/20 rounded-full translate-y-8 -translate-x-8"></div>
+      {/* Icon - EcoSense style */}
+      <div className="w-12 h-12 bg-[#F4D35E] rounded-full mb-4 mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+        {metricInterpretation.tone === 'positive' ? (
+          <svg className="w-6 h-6 text-[#2B2B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        ) : metricInterpretation.tone === 'negative' ? (
+          <svg className="w-6 h-6 text-[#2B2B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+          </svg>
+        ) : metricInterpretation.tone === 'warning' ? (
+          <svg className="w-6 h-6 text-[#2B2B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+        ) : (
+          <svg className="w-6 h-6 text-[#2B2B2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        )}
+      </div>
+
+      {/* Title */}
+      <div className="text-sm text-white/80 mb-2 font-medium">{title}</div>
       
-      <CardHeader className="pb-4 relative z-10">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="text-xl text-gray-600">
-              {categoryIcons[category]}
-            </div>
-            <span className={cn("px-2.5 py-1 rounded-md text-xs font-medium border", categoryColors[category])}>
-              {categoryLabels[category]}
-            </span>
-            {def?.description && (
-              <InfoTooltip 
-                title={title}
-                description={def.description}
-              />
-            )}
-          </div>
+      {/* Value */}
+      <div className="text-2xl font-bold text-white mb-2">
+        {value !== undefined ? formatValue(value, unit) : "N/A"}
+      </div>
+
+      {/* Interpretation summary - compact */}
+      {metricInterpretation.what_to_watch && (
+        <div className="text-xs text-white/70 mb-3 leading-relaxed">
+          {metricInterpretation.what_to_watch}
         </div>
-        <CardTitle className="text-lg font-semibold text-gray-900 mt-2">
-          {title}
-        </CardTitle>
-      </CardHeader>
+      )}
       
-      <CardContent className="pt-0 relative z-10">
-        <div className="space-y-4">
-          {/* Value display with trend indicator */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-gray-900">
-                {value !== undefined ? formatValue(value, unit) : "N/A"}
-              </span>
-              {unit !== 'other' && unit !== 'volatility' && (
-                <span className="text-base font-medium text-gray-500">
-                  {unit === 'percent' ? '%' : unit === 'ARS' ? 'ARS' : unit === 'USD' ? 'USD' : ''}
-                </span>
-              )}
-            </div>
-            {/* Trend indicator */}
-            <div className="flex items-center gap-2">
-              <span className={`text-2xl font-bold ${trendStyle.color}`}>
-                {trendStyle.icon}
-              </span>
-              <span className={`text-xs font-medium px-2 py-1 rounded-full ${trendStyle.bg} ${trendStyle.color}`}>
-                {metricInterpretation.tone === 'positive' ? 'Mejora' : metricInterpretation.tone === 'negative' ? 'Empeora' : metricInterpretation.tone === 'warning' ? 'Atención' : 'Estable'}
-              </span>
-            </div>
-          </div>
-          
-          {/* Title */}
-          <div className="text-lg font-semibold text-gray-900">
-            {metricInterpretation.title}
-          </div>
-          
-          {/* Explanation */}
-          <div className="text-sm text-gray-700 leading-relaxed">
-            {metricInterpretation.explanation}
-          </div>
-          
-          {/* Why it matters with tooltip */}
-          <div className="text-xs text-gray-600 italic flex items-start gap-2">
-            <span><strong>Por qué importa:</strong> {metricInterpretation.why_it_matters}</span>
-          </div>
-          
-          {/* What to watch */}
-          <div className="text-xs text-gray-600 italic">
-            <strong>Qué mirar:</strong> {metricInterpretation.what_to_watch}
-          </div>
-          
-          {/* Updated timestamp */}
-          {updatedAt && (
-            <div className="flex items-center gap-2 text-xs text-gray-400">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>Actualizado: {formatDate(updatedAt)}</span>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+      {/* Status badge - Dark EcoSense style */}
+      <div className={`text-xs px-2 py-1 rounded-full font-medium inline-block ${
+        metricInterpretation.tone === 'positive' ? 'border border-green-400/30 text-green-300 bg-green-500/20' :
+        metricInterpretation.tone === 'negative' ? 'border border-red-400/30 text-red-300 bg-red-500/20' :
+        metricInterpretation.tone === 'warning' ? 'border border-amber-400/30 text-amber-300 bg-amber-500/20' :
+        'border border-blue-400/30 text-blue-300 bg-blue-500/20'
+      }`}>
+        {metricInterpretation.tone === 'positive' ? 'Mejora' : 
+         metricInterpretation.tone === 'negative' ? 'Empeora' : 
+         metricInterpretation.tone === 'warning' ? 'Atención' : 'Estable'}
+      </div>
+    </div>
   );
 });
